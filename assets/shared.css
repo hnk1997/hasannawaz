@@ -189,3 +189,24 @@ html{background:#050505}
   .hn-more-title{font-size:22px}
   .hn-more-head{margin-bottom:36px}
 }
+
+/* ==================================== consistent content width cap ======== */
+/* .framer-17hcr7g (hero + case studies, also reused on more-case-studies.html)
+   and .hn-awards-inner were both plain width:70% with no ceiling, so the grid
+   kept growing past its designed size on very large screens (1792px wide at
+   2560px viewport instead of staying at its 1440px-viewport value of 1008px).
+   Nav and footer are deliberately left full-bleed -- only these two content
+   columns are capped. */
+.framer-17hcr7g{max-width:1008px}
+.hn-awards-inner{max-width:1008px}
+
+/* About page: the light card behind the testimonials section is 180% of its
+   own 1000px-capped ancestor, i.e. a fixed 1800px, centred by its flex parent.
+   That's wide enough to bleed past any viewport up to ~1800px, but beyond that
+   the viewport outgrows it and the dark section behind it (#050505) shows
+   through as black bars on either side. Locking it to 100vw on desktop widths
+   keeps it exactly viewport-wide at any size; the ancestor's overflow:hidden
+   clips it cleanly, so there is no scrollbar side effect. */
+@media (min-width:1372px){
+  .framer-ay3odp{width:100vw!important}
+}

@@ -180,12 +180,12 @@ html{background:#050505}
 .hn-more-main{padding-top:150px!important;height:auto!important;min-height:100vh}
 .hn-more-head{width:100%;margin-bottom:52px}
 .hn-more-title{font-family:"Inter Tight","Inter Tight Placeholder",sans-serif;
-  font-weight:600;font-size:40px;letter-spacing:-0.02em;line-height:1.15em;
+  font-weight:600;font-size:26px;letter-spacing:-0.02em;line-height:1.15em;
   color:#fff;margin:0}
 .hn-more-row{padding:8px 0 44px;display:flex}
 
 @media (max-width:809.98px){
   .hn-more-main{padding-top:112px!important}
-  .hn-more-title{font-size:30px}
+  .hn-more-title{font-size:22px}
   .hn-more-head{margin-bottom:36px}
 }

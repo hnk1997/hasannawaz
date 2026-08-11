@@ -1,0 +1,1490 @@
+/* ============================================================
+   Hasan Nawaz — portfolio homepage
+   Layout mirrored from nicolearoberts.com — Apple-esque light theme:
+   the system font stack (real SF Pro on Apple hardware, no licensing
+   needed — it's the OS's own font) and Apple's actual light-mode
+   palette (near-black ink, #f5f5f7 grey, #d2d2d7 hairlines).
+   ============================================================ */
+
+/* Premium cross-page transition (this shared stylesheet means it covers
+   every page that links it, present and future). Browsers without MPA
+   View Transitions support (anything pre Chrome 126 / Safari 18) just
+   navigate instantly as before — this is additive, not a dependency. */
+@view-transition{
+  navigation: auto;
+}
+
+/* The default browser cross-page transition is a flat opacity fade.
+   Apple's own site transitions carry a touch of depth — the outgoing
+   view settles back and fades, the incoming view eases in from a hair
+   larger and softly focuses into place. Both run on the same eased
+   curve so the handoff reads as one continuous motion, not two. */
+::view-transition-old(root){
+  animation: cs-page-out .5s cubic-bezier(.4,0,.2,1) both;
+}
+::view-transition-new(root){
+  animation: cs-page-in .5s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes cs-page-out{
+  to{ opacity:0; transform:scale(.985); }
+}
+@keyframes cs-page-in{
+  from{ opacity:0; transform:scale(1.015); }
+}
+@media (prefers-reduced-motion:reduce){
+  ::view-transition-old(root),
+  ::view-transition-new(root){
+    animation:none;
+  }
+}
+
+:root{
+  color-scheme: light;
+
+  /* colour tokens — Apple's own light-mode values. */
+  --bg:             #ffffff;
+  --surface:        #f5f5f7;
+  --surface-2:      #fbfbfd;
+  --grey-chip:      #f5f5f7;
+  --line:           #d2d2d7;
+  --ink:            #1d1d1f;
+  --ink-2:          #1d1d1f;
+  --body:           #6e6e73;
+  --muted:          #86868b;
+  --white:          #ffffff;
+
+  /* type — the system stack resolves to real SF Pro on Mac/iOS/iPadOS
+     (free: it's the OS's own font, not a redistributed file), and to
+     Segoe UI / Roboto elsewhere. Same family for display and body,
+     exactly like Apple's own marketing pages — the two roles are told
+     apart by weight and size, not by swapping typefaces. */
+  --display: "Inter Tight", "Inter Tight Placeholder", sans-serif;
+  --ui: "Inter", "Inter Placeholder", sans-serif;
+
+  /* metrics */
+  --shell:   1320px;
+  --gutter:  24px;
+  --nav-h:   98px;
+
+  /* spring(duration 1s, bounce .2) sampled at 24 steps — the reference's
+     hero crossfade easing, reproduced exactly */
+  --spring-fade: linear(0, 0.0575, 0.1875, 0.3438, 0.4982, 0.6354, 0.7488,
+    0.8372, 0.9028, 0.949, 0.9796, 0.9986, 1.0091, 1.014, 1.0152, 1.0142,
+    1.0122, 1.0099, 1.0075, 1.0055, 1.0038, 1.0024, 1.0014, 1.0008, 1.0003);
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--ui);
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+
+h1,h2,h3,h4,h5,p,figure,blockquote{ margin:0; }
+a{ color:inherit; text-decoration:none; }
+img,video{ display:block; max-width:100%; }
+
+/* ---------- image skeleton loading ----------
+   Every <img> starts with a shimmering placeholder background and
+   opacity:0; main.js flips on .is-img-loaded the moment it actually
+   finishes loading (or immediately, for images already served from
+   cache — see the .complete check there) so the swap from placeholder
+   to real pixels is a fade, never an abrupt pop. Scoped to real
+   content images only — icon glyphs, decorative SVG logos, and the
+   nav avatar are exempted since they're tiny, load instantly, and a
+   shimmer box around them would look broken rather than helpful. */
+img:not(.is-img-loaded):not(.logo__avatar):not(.footer__avatar):not(.ico-li):not(.credential__badge):not(.awards__project-logo){
+  background:linear-gradient(100deg, var(--surface) 30%, var(--white) 50%, var(--surface) 70%);
+  background-size:200% 100%;
+  animation:img-skeleton 1.4s ease-in-out infinite;
+}
+img{ opacity:1; transition:opacity .35s ease; }
+img:not(.is-img-loaded):not(.logo__avatar):not(.footer__avatar):not(.ico-li):not(.credential__badge):not(.awards__project-logo){
+  opacity:0;
+}
+@keyframes img-skeleton{
+  0%{ background-position:200% 0; }
+  100%{ background-position:-200% 0; }
+}
+@media (prefers-reduced-motion:reduce){
+  img{ animation:none !important; opacity:1 !important; transition:none !important; }
+}
+button{ font:inherit; }
+
+/* Thin, unfilled, slightly negative grade — closer to SF Symbols'
+   regular-weight line style than Material's default. */
+.ms{
+  font-family:"Material Symbols Rounded";
+  font-weight:300;
+  font-style:normal;
+  line-height:1;
+  letter-spacing:normal;
+  text-transform:none;
+  white-space:nowrap;
+  word-wrap:normal;
+  direction:ltr;
+  font-variation-settings:"FILL" 0,"wght" 300,"GRAD" -25,"opsz" 20;
+  -webkit-font-feature-settings:"liga";
+  -webkit-font-smoothing:antialiased;
+}
+
+.ico-li{ display:inline-flex; width:1em; height:1em; }
+
+/* mobile-only line break, e.g. the testimonials heading — hidden by
+   default, switched on inside the 860px breakpoint below. */
+.testi-br{ display:none; }
+.ico-li svg{ width:100%; height:100%; }
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav{
+  position:static;
+}
+
+.nav__inner{
+  min-height:var(--nav-h);
+  padding:var(--gutter);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px;
+  position:relative; z-index:1;
+  background:var(--bg);
+}
+
+.logo{ display:flex; align-items:center; gap:10px; }
+.logo__avatar{
+  width:36px; height:36px;
+  /* the source PNG's own baked-in rounding is barely visible at this
+     size, so a matching radius is added here to echo the rounded-corner
+     language used everywhere else on the page (cards, pills, buttons). */
+  border-radius:10px;
+  object-fit:cover;
+  flex:none;
+}
+.logo__wordmark{
+  font-family:var(--display);
+  font-size:17px; font-weight:600; line-height:1.3;
+  letter-spacing:.2px;
+  color:var(--ink);
+}
+
+.nav__links{ display:flex; align-items:center; gap:28px; }
+/* "Home" only makes sense as a menu item on mobile, where the nav
+   logo is gone (see .logo below) — on desktop the logo itself already
+   links home, so a duplicate text link would be redundant. */
+.nav__home-link{ display:none; }
+.nav__links a{
+  font-family:var(--ui);
+  font-size:15px; font-weight:400; line-height:1.2;
+  color:var(--body);
+  transition:color .2s ease;
+}
+.nav__links a:hover{ color:var(--ink); }
+
+.nav__burger{
+  display:none;
+  width:44px; height:44px; border:0; background:transparent;
+  padding:0; cursor:pointer;
+  flex-direction:column; align-items:center; justify-content:center; gap:6px;
+}
+.nav__burger span{ display:block; width:22px; height:1.5px; background:var(--ink); transition:transform .25s ease,opacity .25s ease; }
+.nav__burger[aria-expanded="true"] span:nth-child(1){ transform:translateY(3.75px) rotate(45deg); }
+.nav__burger[aria-expanded="true"] span:nth-child(2){ transform:translateY(-3.75px) rotate(-45deg); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  /* nav is in normal flow now (not fixed), so it already occupies
+     --nav-h of the viewport above the hero — subtract that here so
+     hero + nav together still fill exactly one screen, not more. */
+  min-height:calc(100vh - var(--nav-h));   /* fallback for browsers without dvh support */
+  min-height:calc(100dvh - var(--nav-h));  /* the *actual* visible viewport — 100vh on mobile
+    is measured against the largest possible viewport (browser chrome
+    collapsed), so the hero would render taller than what's on screen
+    and force a tiny extra scroll. dvh tracks the real, current one. */
+  display:flex; flex-direction:column;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
+}
+
+.hero__stage{
+  flex:1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:16px;
+  padding:40px var(--gutter);
+  text-align:center;
+}
+
+/* Icon cluster above the eyebrow, swapping in lockstep with the
+   .hero__line rotator below (same JS index, same spring easing) — each
+   frame's icon(s) pop in with a slight overshoot rather than a flat
+   fade, and multi-icon frames stagger child entrance for a livelier,
+   hand-tuned feel instead of everything landing at once. */
+.hero__icons{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:88px;
+  margin-bottom:4px;
+}
+.hero__icon{
+  grid-area:1/1;
+  display:flex; align-items:center; justify-content:center;
+  gap:10px;
+  opacity:0;
+  pointer-events:none;
+}
+.hero__icon img{
+  width:76px; height:76px;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.16));
+  opacity:0;
+  transform:scale(.4) translateY(10px) rotate(-10deg);
+  transition:opacity .5s var(--spring-fade), transform .5s var(--spring-fade);
+}
+.hero__icon.is-active{ opacity:1; }
+.hero__icon.is-active img{ opacity:1; transform:scale(1) translateY(0) rotate(0deg); }
+.hero__icon.is-leaving img{
+  opacity:0;
+  transform:scale(.5) translateY(-10px) rotate(8deg);
+  transition-duration:.35s;
+}
+/* stagger the pop-in of the second/third icon so a multi-icon frame
+   reads as a small cascade instead of one flat block appearing */
+.hero__icon.is-active img:nth-child(2){ transition-delay:.08s; }
+.hero__icon.is-active img:nth-child(3){ transition-delay:.16s; }
+
+/* globe (travel) and checkmark (payments) sit side by side as two
+   equal, separate marks — not one badge stacked on the other. */
+.hero__icon--multi img{ width:68px; height:68px; }
+.hero__icon--multi img:not(:first-child){ margin-left:-18px; }
+.hero__icon--multi img:nth-child(2){ transform-origin:center; z-index:1; }
+
+.hero__eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--ui);
+  font-size:19px; font-weight:400; line-height:1.2;
+  color:var(--body);
+}
+
+.hero__title{
+  position:relative;
+  display:grid;
+  width:min(100%,980px);
+  font-family:var(--display);
+  font-size:56px; font-weight:600; line-height:1.1;
+  letter-spacing:-.5px;
+  color:var(--ink);
+}
+/* Vertical ticker crossfade: each line enters by drifting up into place
+   from just below its resting spot, and exits by continuing to drift up
+   and out while fading — a scrolling motion, not a flat crossfade. Both
+   axes ease on the same spring (duration .9s, bounce .2 → damping ratio
+   .8, ω₀ ≈ 9 rad/s) sampled into a linear() easing. */
+.hero__line{
+  grid-area:1/1;
+  opacity:0;
+  transform:translateY(18px);
+  will-change:opacity, transform;
+  transition:opacity .45s var(--spring-fade), transform .45s var(--spring-fade);
+  pointer-events:none;
+}
+.hero__line.is-active{ opacity:1; transform:translateY(0); }
+.hero__line.is-leaving{ opacity:0; transform:translateY(-18px); }
+
+/* Apple-style subtle appear on page load: eyebrow, headline and contact
+   strip rise and fade in with a short stagger between them. The hero
+   icon isn't part of this group — it gets marked .is-active by JS at
+   the same moment, so it plays the exact same spring pop-in (scale +
+   rotate) as every later icon swap, rather than this plainer fade. */
+.hero__eyebrow,
+.hero__title,
+.hero__contact{
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
+}
+.hero__eyebrow{ transition-delay:.05s; }
+.hero__title{ transition-delay:.16s; }
+.hero__contact{ transition-delay:.4s; }
+.hero.is-loaded .hero__eyebrow,
+.hero.is-loaded .hero__title,
+.hero.is-loaded .hero__contact{ opacity:1; transform:none; }
+
+/* hero contact strip */
+.hero__contact{
+  padding:var(--gutter);
+  display:flex; flex-direction:column; gap:8px;
+}
+.hero__contact-label{
+  font-family:var(--ui);
+  font-size:13px; font-weight:400; line-height:1.2;
+  letter-spacing:.4px; text-transform:uppercase;
+  color:var(--muted);
+}
+.hero__contact-row{
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
+  flex-wrap:wrap;
+}
+.hero__contact-left{ display:flex; align-items:center; gap:28px; flex-wrap:wrap; }
+.hero__contact-left a,
+.hero__contact-right{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--ui);
+  font-size:14px; font-weight:400; line-height:1.2;
+  color:var(--ink);
+}
+.hero__contact-left a{ transition:color .2s ease; }
+.hero__contact-left a:hover{ color:var(--body); }
+.hero__contact .ms{ font-size:18px; color:var(--body); }
+.hero__contact .ico-li{ font-size:15px; color:var(--body); }
+
+/* ============================================================
+   SECTION HEAD  (pill + h2)
+   ============================================================ */
+.section-head{
+  padding:120px var(--gutter) 20px;
+  display:flex; flex-direction:column; align-items:center; gap:24px;
+  text-align:center;
+}
+.section-head--tight{ padding:0; }
+
+.pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 24px;
+  border-radius:32px;
+  background:var(--grey-chip);
+  font-family:var(--ui);
+  font-size:13px; font-weight:600; line-height:1.4;
+  letter-spacing:.4px; text-transform:uppercase;
+  color:var(--ink);
+}
+.pill .ms{ font-size:18px; color:var(--ink); }
+
+.section-head__title{
+  max-width:864px;
+  font-family:var(--display);
+  font-size:38px; font-weight:600; line-height:1.15;
+  letter-spacing:-.3px;
+  color:var(--ink);
+}
+
+/* ============================================================
+   CASE STUDY CARDS
+   ============================================================ */
+.cases{
+  width:100%; max-width:var(--shell); margin:0 auto;
+  padding:40px var(--gutter) 0;
+  display:flex; flex-direction:column; gap:60px;
+}
+
+.case{
+  display:flex; flex-direction:row; align-items:center; gap:72px;
+  padding:48px;
+  border-radius:40px;
+  background:var(--surface);
+}
+.case--flip{ flex-direction:row-reverse; }
+
+.case__body{
+  flex:none; width:420px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:60px;
+}
+.case__content{
+  width:100%;
+  display:flex; flex-direction:column; align-items:flex-start; gap:4px;
+}
+
+.case__brand{
+  font-family:var(--ui);
+  font-size:13px; font-weight:600; line-height:1.2;
+  letter-spacing:.6px; text-transform:uppercase;
+  color:var(--body);
+}
+
+.case__headline{ display:flex; flex-direction:column; gap:8px; width:100%; }
+.case__title{
+  font-family:var(--display);
+  /* sized so every card title — long or short — wraps to exactly two
+     lines, keeping the cards visually even instead of some running to
+     three lines. Re-check this value if the case-study copy changes. */
+  font-size:31px; font-weight:600; line-height:1.15;
+  letter-spacing:-.3px;
+  color:var(--ink);
+}
+.case__desc{
+  font-family:var(--ui);
+  font-size:16px; font-weight:400; line-height:1.55;
+  color:var(--body);
+}
+
+.case__tags{
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:12px;
+  padding:16px 0 24px;
+}
+.tag{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 12px;
+  border-radius:100px;
+  background:var(--white);
+  font-family:var(--ui);
+  font-size:12px; font-weight:500; line-height:1.2;
+  letter-spacing:.2px;
+  color:var(--body);
+}
+.tag.is-placeholder{ opacity:.55; }
+
+.case__stats{
+  display:flex; flex-direction:row; align-items:center; gap:32px;
+  padding:24px 0 0;
+  border-top:1px solid var(--line);
+  width:100%;
+}
+.stat{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+.stat__num{
+  font-family:var(--display);
+  font-size:28px; font-weight:700; line-height:1.2;
+  letter-spacing:-.3px;
+  color:var(--ink-2);
+}
+.stat__label{
+  font-family:var(--ui);
+  font-size:13px; font-weight:400; line-height:1.2;
+  letter-spacing:.2px;
+  color:var(--muted);
+}
+
+.case__actions{ display:flex; flex-direction:row; align-items:center; gap:16px; flex-wrap:wrap; }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  padding:14px 24px;
+  border-radius:365px;
+  font-family:var(--ui);
+  font-size:15px; font-weight:500; line-height:1.2;
+  letter-spacing:.1px;
+  white-space:nowrap;
+  transition:background-color .2s ease,color .2s ease,border-color .2s ease;
+}
+.btn--primary{ background:var(--ink); color:var(--white); }
+.btn--primary:hover{ background:#3a3a3c; }
+.btn--secondary{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+.btn--secondary:hover{ background:var(--ink); color:var(--white); border-color:var(--ink); }
+.btn__arrow{ font-size:17px; }
+
+.case__media{
+  flex:1 1 auto;
+  min-width:0;
+  height:540px;
+  display:flex; align-items:center; justify-content:center;
+  margin:0;
+}
+.case__media img{
+  width:100%; height:100%;
+  object-fit:contain;
+  border-radius:12px;
+}
+.case__media--portrait img{ width:auto; max-width:100%; }
+
+/* ============================================================
+   WRITING
+   ============================================================ */
+.writing{
+  width:100%; max-width:var(--shell); margin:0 auto;
+  padding:120px var(--gutter) 120px;
+  display:flex; flex-direction:column; align-items:center; gap:60px;
+}
+.writing__grid{
+  width:100%;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+}
+.post{
+  display:flex; flex-direction:column; justify-content:space-between; gap:24px;
+  padding:32px;
+  border-radius:32px;
+  background:var(--surface);
+  transition:background-color .2s ease;
+}
+.post:hover{ background:#ececee; }
+.post__text{ display:flex; flex-direction:column; gap:8px; }
+.post__title{
+  font-family:var(--display);
+  font-size:22px; font-weight:600; line-height:1.25;
+  letter-spacing:-.2px;
+  color:var(--ink);
+}
+.post__desc{
+  font-family:var(--ui);
+  font-size:16px; font-weight:400; line-height:1.5;
+  color:var(--body);
+}
+.post__meta{ display:flex; align-items:center; justify-content:space-between; }
+.post__arrow{ font-size:20px; color:var(--body); transition:color .2s ease; }
+.post:hover .post__arrow{ color:var(--ink); }
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.references{
+  width:100%; max-width:var(--shell); margin:0 auto;
+  padding:120px var(--gutter) 0;
+  display:flex; flex-direction:column; align-items:center; gap:60px;
+}
+/* Two independent column flows (not a shared grid) so each column's
+   card spacing stays even regardless of how tall its neighbour's card
+   is — a shared-grid-row layout stretches short cards to match a much
+   longer one next to them, throwing off the vertical rhythm. Reading
+   order (odd cards in col 1, even in col 2) still comes out left-to-
+   right, top-to-bottom because of how the two columns interleave. */
+.references__grid{
+  width:100%;
+  display:flex;
+  gap:24px;
+}
+.references__col{
+  flex:1 1 0; min-width:0;
+  display:flex; flex-direction:column; gap:24px;
+}
+
+.quote{
+  display:flex; flex-direction:column; gap:32px;
+  padding:40px;
+  border-radius:40px;
+  background:var(--surface);
+}
+.quote blockquote{
+  font-family:var(--ui);
+  font-size:16px; font-weight:400; line-height:1.6;
+  color:var(--body);
+}
+.quote__name{
+  font-family:var(--ui);
+  font-size:14px; font-weight:600; line-height:1.4;
+  color:var(--ink);
+}
+.quote__name a{
+  display:inline-flex; align-items:center; gap:6px;
+  transition:color .2s ease;
+}
+.quote__name a:hover{ color:var(--body); }
+.quote__name .ico-li{ font-size:13px; }
+.quote__role{
+  font-family:var(--ui);
+  font-size:12px; font-weight:400; line-height:1.4;
+  color:var(--muted);
+}
+
+.references__cta{ display:flex; justify-content:center; }
+
+/* ============================================================
+   FOOTER — Apple's own footer treatment: quiet light-grey band,
+   small dark-grey text, hairline dividers. Not a loud closing banner.
+   ============================================================ */
+.footer{
+  background:var(--surface);
+  border-top:1px solid var(--line);
+  border-radius:40px 40px 0 0;
+  padding:60px 40px 32px;
+  color:var(--ink);
+}
+.footer__top{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.footer__avatar{ width:48px; height:48px; border-radius:14px; margin-bottom:4px; }
+.footer__name{
+  font-family:var(--display);
+  font-size:24px; font-weight:600; line-height:1;
+  letter-spacing:-.2px;
+  color:var(--ink);
+}
+.footer__role{
+  font-family:var(--ui);
+  font-size:12px; font-weight:400; line-height:1.4;
+  letter-spacing:.4px; text-transform:uppercase;
+  color:var(--muted);
+}
+.footer__links{
+  display:flex; flex-wrap:wrap; justify-content:center; gap:36px;
+  margin-top:24px;
+}
+.footer__links a{
+  font-family:var(--ui);
+  font-size:14px; font-weight:400; line-height:1.2;
+  color:var(--body);
+  transition:color .2s ease;
+}
+.footer__links a:hover{ color:var(--ink); }
+
+.footer__rule{
+  height:1px; background:var(--line);
+  margin:32px 8px 0;
+}
+.footer__bottom{
+  margin-top:20px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
+  padding:0 8px;
+  flex-wrap:wrap;
+}
+.footer__copy{
+  font-family:var(--ui);
+  font-size:13px; font-weight:400; line-height:1.4;
+  color:var(--muted);
+}
+.footer__social{ display:flex; align-items:center; gap:20px; }
+.footer__social a{ display:inline-flex; position:relative; color:var(--body); transition:color .2s ease; }
+.footer__social a.is-copied{ color:var(--ink); }
+.footer__social a:hover{ color:var(--ink); }
+.footer__social .ms{ font-size:20px; }
+.footer__social .ico-li{ font-size:17px; }
+
+/* "Copied" tooltip for icon-only email-copy links (e.g. the footer
+   mail icon), which have no text label of their own to swap. */
+.js-copy-email__tip{
+  position:absolute; bottom:calc(100% + 10px); left:50%;
+  transform:translateX(-50%) translateY(4px);
+  background:var(--ink); color:var(--bg);
+  font-family:var(--ui); font-size:12px; font-weight:600;
+  padding:5px 10px; border-radius:8px; white-space:nowrap;
+  opacity:0; pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.is-copied .js-copy-email__tip{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ============================================================
+   ABOUT — intro
+   ============================================================ */
+/* Padding + max-width live together on .about-hero__inner (not split
+   across the section and its child) so the rendered content width
+   matches every other section's shell-minus-gutter math exactly. */
+.about-hero__inner{
+  width:100%; max-width:var(--shell); margin:0 auto;
+  padding:80px var(--gutter) 40px;
+  display:flex; flex-direction:row; align-items:stretch; gap:72px;
+}
+.about-hero__text{
+  flex:1 1 auto; min-width:0;
+  display:flex; flex-direction:column; align-items:flex-start; gap:24px;
+}
+.about-hero__title{
+  font-family:var(--display);
+  font-size:44px; font-weight:600; line-height:1.15;
+  letter-spacing:-.5px;
+  color:var(--ink);
+  max-width:640px;
+}
+.about-hero__bio,
+.about-hero__achievements{
+  font-family:var(--ui);
+  font-size:17px; font-weight:400; line-height:1.6;
+  color:var(--body);
+  max-width:640px;
+}
+.about-hero__achievements strong{ color:var(--ink); font-weight:600; }
+.about-hero__actions{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:8px; }
+.about-hero__portrait{
+  flex:none; width:360px;
+  /* no explicit height — align-items:stretch on .about-hero__inner makes
+     this match the text column's natural height (title through CTAs)
+     exactly, per spec, rather than an arbitrary fixed square. */
+  border-radius:32px;
+  overflow:hidden;
+  background:var(--surface);
+}
+.about-hero__portrait img{ width:100%; height:100%; object-fit:cover; }
+
+/* ============================================================
+   ABOUT — principles ("How I Think")
+   ============================================================ */
+.principles{
+  width:100%; max-width:var(--shell); margin:0 auto;
+  padding:120px var(--gutter) 0;
+  display:flex; flex-direction:column; align-items:center; gap:60px;
+}
+.principles__grid{
+  width:100%;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+}
+.principle{
+  padding:28px;
+  border-radius:24px;
+  background:var(--surface);
+}
+.principle p{
+  font-family:var(--ui);
+  font-size:16px; font-weight:400; line-height:1.5;
+  color:var(--ink);
+}
+
+/* ============================================================
+   ABOUT — awards & credentials
+   ============================================================ */
+.awards{
+  width:100%; max-width:var(--shell); margin:0 auto;
+  padding:120px var(--gutter) 0;
+  display:flex; flex-direction:column; align-items:center; gap:40px;
+}
+/* Featured project banner: dark card, Cannes Lions lockup pinned
+   top-left, the mockup bleeding past the card's top/bottom edge on the
+   right, "View Project" pinned bottom-left — mirrors hasanhere.com/about.
+   The mockup is positioned absolutely (not padded/flexed) so it can
+   overflow past the card's own edges without being clipped or inset. */
+.awards__project{
+  position:relative;
+  display:block;
+  width:100%; min-height:460px;
+  border-radius:32px;
+  overflow:hidden;
+  background:var(--surface);
+}
+.awards__project-badges{
+  position:absolute; top:40px; left:40px; z-index:2;
+  display:flex; flex-direction:column; align-items:flex-start; gap:24px;
+}
+.awards__project-head{ display:flex; align-items:center; gap:16px; }
+/* icon-only stand-in for the "View Project" CTA, mobile only — desktop
+   keeps the full text link pinned bottom-left instead. */
+.awards__project-icon{ display:none; }
+.awards__project-logo{ height:52px; width:auto; }
+.awards__medal{ display:flex; align-items:center; gap:8px; }
+.awards__medal img{ height:34px; width:auto; margin-right:-14px; }
+.awards__medal img:last-of-type{ margin-right:0; }
+.awards__medal span{
+  margin-left:8px;
+  font-family:var(--ui);
+  font-size:17px; font-weight:600; letter-spacing:.3px; text-transform:uppercase;
+  color:var(--ink);
+}
+/* top offset matches .awards__project-badges' 40px inset (with a touch
+   less, so the mockup still bleeds slightly past the top edge); height
+   extends past the card's bottom for the rest of the "bleed" effect. */
+.awards__project-media{
+  position:absolute; z-index:1;
+  right:0; top:32px;
+  height:105%;
+  width:auto; max-width:62%;
+  object-fit:contain;
+}
+.awards__project-cta{
+  position:absolute; left:40px; bottom:36px; z-index:2;
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--ui);
+  font-size:19px; font-weight:600;
+  color:var(--ink);
+  pointer-events:none;
+}
+.awards__project-cta .ms{ font-size:20px; }
+.awards__credentials{
+  width:100%;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:20px;
+}
+.credential{
+  display:flex; align-items:center; gap:20px;
+  padding:28px;
+  border-radius:24px;
+  background:var(--surface);
+  transition:background-color .2s ease;
+}
+.credential:hover{ background:#ececee; }
+.credential__badge{ width:48px; height:48px; object-fit:contain; flex:none; }
+.credential__text{ display:flex; flex-direction:column; gap:6px; }
+.credential__name{
+  font-family:var(--display);
+  font-size:18px; font-weight:600; line-height:1.3;
+  color:var(--ink);
+}
+.credential__link{
+  display:inline-flex; align-items:center; gap:4px;
+  font-family:var(--ui);
+  font-size:14px; font-weight:400;
+  color:var(--body);
+}
+.credential__link .ms{ font-size:16px; }
+
+/* ============================================================
+   ABOUT — gallery ("Beyond The Cubicle")
+   ============================================================ */
+.gallery{
+  width:100%; max-width:var(--shell); margin:0 auto;
+  padding:120px var(--gutter) 120px;
+  display:flex; flex-direction:column; align-items:center; gap:60px;
+}
+.gallery__grid{
+  width:100%;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+}
+.gallery__item{
+  position:relative;
+  border-radius:24px;
+  overflow:hidden;
+  aspect-ratio:3/4;
+}
+.gallery__item img{
+  width:100%; height:100%; object-fit:cover;
+}
+.gallery__item figcaption{
+  position:absolute; left:0; right:0; bottom:0;
+  padding:24px 20px;
+  background:linear-gradient(0deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 100%);
+  font-family:var(--ui);
+  font-size:14px; font-weight:400; line-height:1.4;
+  color:#fff;
+}
+
+/* ============================================================
+   CASE STUDY DETAIL PAGES
+   Structure, spacing and type scale mirrored 1:1 from
+   nicolearoberts.com/case-studies/* (measured at 1440px):
+   1200px shell w/ 24px padding, 80px between top-level sections,
+   60px between sub-blocks, 48px inside blocks. Only colour and
+   typeface are swapped for the Apple-styled system used sitewide.
+   ============================================================ */
+.cs{
+  display:flex; flex-direction:column; gap:80px;
+  padding-bottom:80px;
+}
+/* 1200px shell + 24px padding = 1152px content, matching the reference */
+.cs-shell{
+  width:100%; max-width:1200px; margin:0 auto;
+  padding:0 24px;
+}
+
+/* ---------- hero ---------- */
+.cs-hero{
+  padding:24px 0;
+  display:flex; flex-direction:column;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
+}
+.cs-hero__head{
+  display:flex; flex-direction:column; align-items:center; gap:24px;
+  text-align:center;
+}
+.cs-hero__title{
+  font-family:var(--display);
+  font-size:38px; font-weight:600; line-height:1.2;
+  letter-spacing:-.4px;
+  color:var(--ink);
+}
+.cs-hero__media{
+  padding:48px 24px;
+  display:flex; align-items:center; justify-content:center; gap:24px;
+}
+.cs-hero__media img{ width:100%; height:auto; }
+/* the Aramco mockup source is much lower-res than Sastaticket's — cap
+   its display width so it isn't upscaled past its native resolution
+   and doesn't pixelate. */
+.cs-hero__media--compact img{ width:auto; max-width:min(100%,900px); margin:0 auto; }
+/* ~75% smaller than the default full-bleed hero mockup */
+.cs-hero__media--tiny img{ width:auto; max-width:min(100%,306px); margin:0 auto; }
+/* shot-wallet.webp is a much taller/narrower portrait than the other
+   tiny-hero assets, so matching it by max-width alone still renders
+   much taller — sized down further so it reads as the same scale. */
+.cs-hero__media--wallet img{ width:auto; max-width:min(100%,221px); margin:0 auto; }
+.cs-hero__media--neom img{ width:auto; max-width:min(100%,398px); margin:0 auto; }
+
+/* 16:9 by default — each embed can override with an inline
+   aspect-ratio (e.g. style="aspect-ratio:1012/1812") so the container
+   actually fits that video instead of letterboxing/cropping it. */
+.cs-video{
+  position:relative; width:100%; aspect-ratio:16/9;
+  background:var(--surface);
+}
+.cs-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+/* classic Vimeo responsive-embed technique (padding-top holds the
+   aspect ratio) for one-off embeds whose exact ratio was supplied
+   directly, rather than going through the .cs-video/16:9 default. */
+.cs-video-embed iframe{ border:0; }
+
+/* stand-in for a not-yet-supplied YouTube embed — same 16:9 box so
+   swapping in the real <iframe> later doesn't shift any layout. */
+.cs-video--placeholder{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  border:1px dashed var(--line);
+}
+.cs-video--placeholder .ms{ font-size:48px; color:var(--line); }
+.cs-video--placeholder span:last-child{
+  font-family:var(--ui); font-size:14px; font-weight:500;
+  color:var(--body);
+}
+
+/* ---------- generic section ---------- */
+.cs-section{ display:flex; flex-direction:column; gap:60px; }
+/* a block groups one title+prose unit with whatever follows it (a
+   figure, a stat grid, a card row) — 40px between those two groups */
+.cs-block{ display:flex; flex-direction:column; gap:40px; }
+.cs-head{ display:flex; flex-direction:column; align-items:flex-start; gap:24px; }
+/* title sits close to the copy it introduces, not floating 40-48px away */
+.cs-titled-prose{ display:flex; flex-direction:column; gap:16px; }
+
+/* two heading levels, exactly as the reference uses them */
+.cs-h2{
+  font-family:var(--display);
+  font-size:38px; font-weight:600; line-height:1.2;
+  letter-spacing:-.4px;
+  color:var(--ink);
+}
+.cs-h3{
+  font-family:var(--display);
+  font-size:30px; font-weight:500; line-height:1.4;
+  letter-spacing:-.2px;
+  color:var(--ink);
+}
+.cs-body{
+  font-family:var(--ui);
+  font-size:18px; font-weight:400; line-height:1.8;
+  color:var(--body);
+  max-width:750px;
+}
+.cs-body strong{ color:var(--ink); font-weight:600; }
+/* capped so a full-width paragraph never runs wider than is comfortable
+   to read — long lines are exactly what this avoids */
+.cs-prose{
+  display:flex; flex-direction:column; gap:16px;
+  max-width:750px;
+}
+.cs-prose ul,.cs-prose ol{
+  margin:0; padding-left:22px;
+  display:flex; flex-direction:column; gap:8px;
+}
+.cs-prose li{
+  font-family:var(--ui);
+  font-size:18px; font-weight:400; line-height:1.8;
+  color:var(--body);
+}
+
+/* ---------- split: text on one side, media on the other — the
+   reference alternates this left/right through its whole flow, so
+   sections with a single supporting image use it instead of stacking
+   everything vertically. ---------- */
+.cs-split{
+  display:flex; flex-direction:row; align-items:center; gap:60px;
+}
+.cs-split--reverse{ flex-direction:row-reverse; }
+.cs-split__text{
+  flex:0 0 420px; max-width:420px;
+  display:flex; flex-direction:column; gap:16px; align-items:flex-start;
+}
+.cs-split__text .cs-prose{ max-width:none; }
+.cs-split__media{ flex:1 1 auto; min-width:0; }
+.cs-split__media img{ width:100%; height:auto; display:block; }
+
+/* ---------- overview: two columns ---------- */
+.cs-overview{
+  display:flex; flex-direction:row; gap:32px;
+}
+.cs-overview__main{
+  flex:0 0 572px; max-width:572px;
+  padding-right:24px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:16px;
+}
+.cs-overview__main .btn{ margin-top:8px; }
+.cs-overview__meta{
+  flex:1 1 auto; min-width:0;
+  padding-top:8px;
+  display:flex; flex-direction:column; gap:24px;
+}
+.cs-metarow{
+  display:flex; flex-direction:row; gap:24px;
+  padding:0 8px;
+}
+.cs-metarow__label{
+  flex:0 0 150px;
+  font-family:var(--ui);
+  font-size:12px; font-weight:600; line-height:1.2;
+  letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--muted);
+}
+.cs-metarow__value{
+  flex:1 1 auto;
+  font-family:var(--ui);
+  font-size:16px; font-weight:400; line-height:1.3;
+  color:var(--body);
+}
+
+/* ---------- full-bleed callout banner ---------- */
+.cs-callout{
+  padding:80px 24px;
+  display:flex; flex-direction:column; align-items:center; gap:48px;
+  background:var(--surface);
+}
+.cs-callout__inner{
+  width:100%; max-width:1152px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.cs-callout__eyebrow{
+  font-family:var(--ui);
+  font-size:14px; font-weight:600; line-height:1.2;
+  letter-spacing:1.4px; text-transform:uppercase;
+  color:var(--muted);
+}
+.cs-callout__title{
+  font-family:var(--display);
+  font-size:30px; font-weight:500; line-height:1.4;
+  letter-spacing:-.2px;
+  color:var(--ink);
+  max-width:750px;
+}
+
+/* ---------- figures & captions (caption sits above the image) ----------
+   Before/after pairs are locked to a shared height with object-fit:
+   contain, so a tall narrow crop (e.g. a single mobile screen) and a
+   wide desktop screenshot read at the same visual scale instead of the
+   narrower one stretching to dominate the row. */
+.cs-figrow{
+  display:flex; flex-direction:row; align-items:flex-start; gap:32px;
+  padding:40px;
+  background:var(--surface);
+  border-radius:24px;
+}
+.cs-figrow--plain{ padding:0; background:transparent; border-radius:0; }
+/* stacked instead of side-by-side — each image gets the full row width,
+   so it reads bigger and clearer than two squeezed into half the row */
+.cs-figrow--stack{ flex-direction:column; align-items:stretch; }
+.cs-fig{
+  flex:1 1 0; min-width:0;
+  display:flex; flex-direction:column; gap:12px;
+}
+.cs-fig__cap{
+  font-family:var(--ui);
+  font-size:12px; font-weight:600; line-height:1.2;
+  letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--muted);
+}
+.cs-fig img{ width:100%; height:auto; display:block; }
+.cs-figrow .cs-fig img{
+  height:320px; width:100%;
+  object-fit:contain; object-position:center top;
+}
+/* declared after the row rule above so it wins the cascade at equal
+   specificity — stacked figures show the image at full natural size
+   instead of being capped to the row's fixed comparison height */
+.cs-figrow--stack .cs-fig img{
+  height:auto !important; width:100%;
+}
+/* one screenshot (the "before" calendar) is a narrow mobile crop with a
+   much smaller intrinsic size than its "after" desktop counterpart —
+   stretching it to the full row blows it up past its real resolution,
+   so it's capped and centered instead of forced full-width. */
+.cs-fig--narrow{ align-items:center; }
+.cs-fig--narrow img{ width:auto !important; max-width:260px; }
+.cs-note{
+  font-family:var(--ui);
+  font-size:13px; font-weight:400; line-height:1.5;
+  color:var(--muted);
+  margin-top:-4px;
+}
+
+/* ---------- card grid (themes / decisions) ---------- */
+.cs-cards{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:24px;
+}
+.cs-card{
+  display:flex; flex-direction:column; gap:12px;
+  padding:24px;
+  border-radius:16px;
+  background:var(--surface);
+}
+.cs-card__label{
+  font-family:var(--ui);
+  font-size:14px; font-weight:600; line-height:1.2;
+  letter-spacing:1.4px; text-transform:uppercase;
+  color:var(--muted);
+}
+.cs-card p{
+  font-family:var(--ui);
+  font-size:16px; font-weight:400; line-height:1.55;
+  color:var(--body);
+}
+
+/* ---------- key decisions: each one is its own card ---------- */
+.cs-decision{
+  display:flex; flex-direction:column; gap:24px;
+  padding:40px;
+  border-radius:24px;
+  background:var(--surface);
+}
+/* the card itself already supplies the tint — a before/after row inside
+   it goes flush instead of nesting a second surface inside the first */
+.cs-decision .cs-figrow{ padding:0; background:transparent; border-radius:0; }
+
+/* ---------- impact: full-bleed tint + stat cards ---------- */
+.cs-impact{
+  padding:100px 24px;
+  display:flex; flex-direction:column; align-items:center; gap:48px;
+  background:var(--surface);
+}
+.cs-impact__inner{
+  width:100%; max-width:1152px;
+  display:flex; flex-direction:column; gap:48px;
+}
+.cs-statgrid{
+  display:flex; flex-wrap:wrap; gap:24px;
+}
+/* Card fill flips with its backdrop, the way the reference does it:
+   tinted on the white page, white on the tinted Impact band — so the
+   card always reads as a card. */
+.cs-statcard{
+  flex:1 1 240px;
+  display:flex; flex-direction:column; gap:4px;
+  padding:24px 24px 30px;
+  border-radius:24px;
+  background:var(--surface);
+}
+.cs-impact .cs-statcard{ background:var(--white); }
+.cs-statcard__num{
+  font-family:var(--display);
+  font-size:42px; font-weight:600; line-height:1.2;
+  letter-spacing:-.5px;
+  color:var(--ink);
+}
+.cs-statcard__label{
+  font-family:var(--ui);
+  font-size:12px; font-weight:600; line-height:1.2;
+  letter-spacing:1.2px; text-transform:uppercase;
+  color:var(--body);
+}
+/* qualitative outcomes (e.g. "Regional Benchmark") instead of a number —
+   same card, smaller/tighter headline size and a normal-case label since
+   the value itself is already a short phrase, not a stat + unit. */
+.cs-statgrid--text .cs-statcard{ flex-basis:220px; }
+.cs-statcard__num--text{
+  font-size:20px; letter-spacing:-.2px;
+}
+.cs-statgrid--text .cs-statcard__label{
+  text-transform:none; letter-spacing:.2px; font-weight:400;
+}
+
+/* ---------- learnings: one card each ---------- */
+.cs-learnings{ display:flex; flex-direction:column; gap:40px; }
+.cs-learnings__grid{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+}
+.cs-lesson{
+  display:flex; flex-direction:column; gap:12px;
+  padding:24px;
+  border-radius:16px;
+  background:var(--surface);
+}
+.cs-lesson__icon{ font-size:28px; color:var(--ink); }
+.cs-lesson__title{
+  font-family:var(--display);
+  font-size:18px; font-weight:600; line-height:1.2;
+  color:var(--ink);
+}
+.cs-lesson p{
+  font-family:var(--ui);
+  font-size:16px; font-weight:400; line-height:1.55;
+  color:var(--body);
+}
+
+/* ---------- divider + next case study ---------- */
+.cs-divider{ height:1px; background:var(--line); }
+.cs-next{ display:flex; flex-direction:column; gap:32px; }
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.reveal{ opacity:0; transform:translateY(24px); }
+.reveal.is-in{
+  opacity:1; transform:none;
+  transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);
+}
+
+/* ---------- shared card hover interaction ----------
+   Lift + soft shadow on hover — smooth Apple-style ease, sized to
+   actually read as interactive rather than disappear at a glance.
+   Declared after .reveal.is-in (equal specificity to `.case:hover`
+   etc.) so it wins the cascade and these cards keep their own
+   transition timing instead of inheriting the scroll-reveal's slower
+   one once .is-in has been added. Gallery photos are excluded —
+   they're not clickable, so a hover response there would be
+   misleading. */
+.case,
+.post,
+.awards__project,
+.credential{
+  transition:transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s cubic-bezier(.22,1,.36,1), background-color .2s ease;
+}
+/* gated to real-hover pointers only — otherwise touch devices trigger
+   and get stuck in this state on tap, since there's no mouse to leave
+   with afterward. */
+@media (hover:hover) and (pointer:fine){
+  .case:hover,
+  .post:hover,
+  .awards__project:hover,
+  .credential:hover{
+    transform:translateY(-8px) scale(1.015);
+    box-shadow:0 24px 40px -16px rgba(0,0,0,.24);
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.is-in{ opacity:1; transform:none; transition:none; }
+  .hero__line{ transition:none; }
+  .hero__eyebrow,.hero__title,.hero__contact,
+  .hero.is-loaded .hero__eyebrow,.hero.is-loaded .hero__title,.hero.is-loaded .hero__contact{
+    opacity:1; transform:none; transition:none;
+  }
+  .hero__icon,.hero__icon img{ transition:none; }
+  .hero__icon:not(.is-active){ display:none; }
+  .hero__icon.is-active img{ opacity:1; transform:none; }
+  html{ scroll-behavior:auto; }
+}
+
+/* ============================================================
+   BREAKPOINTS  (mirrors the reference's type ramp)
+   ============================================================ */
+@media (max-width:1320px){
+  .case{ gap:48px; padding:40px; }
+  .case__body{ width:380px; }
+  .case__media{ height:440px; }
+  .case__title{ font-size:28px; }
+  .section-head__title{ font-size:30px; }
+  .hero__title{ font-size:46px; }
+}
+
+@media (max-width:1024px){
+  .nav__links{ gap:20px; }
+  .nav__links a{ font-size:15px; }
+}
+
+@media (max-width:860px){
+  :root{ --nav-h:80px; }
+
+  .nav__inner{ min-height:80px; }
+  .cs-hero__media--tiny img{ max-width:min(100%,153px); }
+  .cs-hero__media--wallet img{ max-width:min(100%,110px); }
+  .cs-hero__media--neom img{ max-width:min(100%,199px); }
+  .nav__burger{ display:flex; position:relative; z-index:101; }
+  /* "Home" is covered by its own line item at the top of the
+     expanded menu (see .nav__home-link below), so the text logo can
+     stay visible here without duplicating it. */
+  .nav__home-link{ display:block; order:-1; }
+
+  /* Apple-style mobile menu: a full-screen light-grey overlay sheet
+     (not an inline dropdown) with a large, left-aligned, ungarnished
+     list — no dividers, no borders, just size and breathing room.
+     Always in the layout (never display:none) so opacity/transform can
+     transition; visibility flips at the end of the close transition so
+     it stops intercepting clicks/taps without cutting the fade short. */
+  .nav__links{
+    position:fixed; inset:0;
+    z-index:100;
+    display:flex; flex-direction:column; align-items:flex-start;
+    gap:28px;
+    padding:calc(var(--nav-h) + 16px) 28px 40px;
+    background:var(--surface);
+    overflow-y:auto;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transform:scale(.96);
+    transition:opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.4,0,.2,1), visibility 0s linear .4s;
+  }
+  .nav__links.is-open{
+    opacity:1; visibility:visible; pointer-events:auto;
+    transform:scale(1);
+    transition:opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.4,0,.2,1), visibility 0s linear 0s;
+  }
+  .nav__links a{
+    font-family:var(--display);
+    font-size:32px; font-weight:600; line-height:1.2;
+    letter-spacing:-.3px;
+    color:var(--ink);
+    opacity:0; transform:translateY(10px);
+    transition:opacity .35s cubic-bezier(.4,0,.2,1), transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  /* each link fades/rises in slightly after the one before it, only
+     while the sheet is open — a small staggered flourish rather than
+     everything appearing at once. */
+  .nav__links.is-open a{ opacity:1; transform:translateY(0); }
+  .nav__links.is-open a:nth-child(1){ transition-delay:.08s; }
+  .nav__links.is-open a:nth-child(2){ transition-delay:.13s; }
+  .nav__links.is-open a:nth-child(3){ transition-delay:.18s; }
+  .nav__links.is-open a:nth-child(4){ transition-delay:.23s; }
+  .nav__links.is-open a:nth-child(5){ transition-delay:.28s; }
+  .nav__links a:active{ opacity:.5; }
+
+  .hero__title{ font-size:32px; }
+  .hero__eyebrow{ font-size:20px; }
+  .hero__icons{ height:68px; }
+  /* the hero icon cluster otherwise bleeds through the full-screen
+     mobile menu overlay on some mobile browsers despite the menu's
+     higher z-index — hiding it outright while the menu is open is a
+     more reliable fix than chasing the stacking-context cause. */
+  body.nav-open .hero__icons{ visibility:hidden; }
+  .hero__icon img{ width:56px; height:56px; }
+  .hero__icon--multi img{ width:50px; height:50px; }
+  .hero__icon--multi img:not(:first-child){ margin-left:-13px; }
+  .hero__contact-row{ flex-direction:column; align-items:flex-start; gap:12px; }
+  /* the desktop break points were chosen for wide lines — at mobile
+     width they'd force an early wrap that strands a lone word on its
+     own line. Drop the manual break and let the browser choose better
+     ones; more than two lines is fine here, an orphaned word isn't. */
+  .hero-br{ display:none; }
+  .testi-br{ display:inline; }
+  /* same reasoning as .hero-br above: the case-card titles' manual
+     breaks were balanced for the desktop card width — at mobile width
+     they force early, uneven wraps. Let the browser choose instead. */
+  .case-title-br{ display:none; }
+
+  .section-head:not(.section-head--tight){ padding:80px var(--gutter) 16px; }
+  /* text-wrap:balance lets the browser pick the line break itself so
+     both lines land close to equal length, instead of a hand-picked
+     <br> that reads lopsided once the actual word lengths are set. */
+  .section-head__title{ font-size:28px; text-wrap:balance; }
+
+  .cases{ gap:40px; }
+  /* mockup first, content second, regardless of the desktop L/R flip —
+     DOM order is body-then-media, so column-reverse surfaces the media
+     on top for both .case and .case--flip alike. */
+  .case,.case--flip{ flex-direction:column-reverse; align-items:stretch; gap:28px; padding:24px; border-radius:32px; }
+  .case__body{ width:100%; gap:32px; }
+  .case__title{ font-size:24px; }
+  .case__brand{ font-size:12px; letter-spacing:1.2px; }
+  .case__desc{ font-size:14px; }
+  /* a fixed, shared container height instead of "auto" — auto let each
+     screenshot's own aspect ratio decide the box size, so portrait
+     mobile mockups towered over the wide laptop ones. contain keeps
+     every image fully visible inside the same-size box. */
+  /* a shorter shared box: wide "laptop" screenshots were height-bound
+     inside the old 320px box, leaving a lot of empty top/bottom
+     letterboxing. Portrait "mobile" screenshots are width-bound instead
+     — they already fill the box's full height with zero vertical
+     padding, so this doesn't change them, only how tightly the
+     landscape ones sit. */
+  .case__media{ height:220px; }
+  .case__media img{ height:100%; width:100%; object-fit:contain; }
+
+  /* .case__body uses align-items:flex-start on desktop (each child sizes
+     to its own content); stretch it here so the actions row — and the
+     buttons inside it — actually reach full column width. */
+  .case__actions{ flex-direction:column; align-items:stretch; align-self:stretch; flex-wrap:nowrap; }
+  .case__actions .btn{ width:100%; }
+
+  .case__stats{ flex-wrap:wrap; gap:24px; }
+  .stat__num{ font-size:22px; }
+  .stat__label{ font-size:12px; letter-spacing:1.2px; }
+  .tag{ font-size:12px; letter-spacing:1.2px; }
+
+  .writing{ padding:80px var(--gutter) 80px; gap:40px; }
+  .writing__grid{ grid-template-columns:1fr; }
+  .post{ padding:24px; border-radius:24px; }
+
+  .references{ padding:80px var(--gutter) 0; gap:40px; }
+  /* unwrap both columns into one flex flow, then use `order` to
+     restore the interleaved Aatir/Simon/Mohib/Faisal/... reading
+     sequence as a single stack. */
+  .references__grid{ flex-direction:column; }
+  .references__col{ display:contents; }
+  .references__col:nth-child(1) .quote:nth-child(1){ order:1; } /* Aatir */
+  .references__col:nth-child(1) .quote:nth-child(2){ order:3; } /* Mohib */
+  .references__col:nth-child(1) .quote:nth-child(3){ order:5; } /* Nizam */
+  .references__col:nth-child(2) .quote:nth-child(1){ order:2; } /* Simon */
+  .references__col:nth-child(2) .quote:nth-child(2){ order:4; } /* Faisal */
+  .references__col:nth-child(2) .quote:nth-child(3){ order:6; } /* Shayan */
+  .quote{ padding:28px; border-radius:32px; }
+
+  .footer{ border-radius:32px 32px 0 0; padding:48px 24px 28px; }
+  .footer__name{ font-size:16px; }
+  /* a clean vertical list instead of centered wrapping pills — the
+     wrap pattern wants width to arrange evenly and just looks ragged
+     at narrow widths with only ~300px to work with. */
+  .footer__links{ flex-direction:column; align-items:center; gap:20px; }
+  .footer__rule{ margin:32px 0 0; }
+  .footer__bottom{ flex-direction:column; align-items:center; gap:16px; padding:0; text-align:center; }
+
+  .cs{ gap:56px; }
+  .cs-hero{ padding:16px 0; }
+  .cs-hero__title{ font-size:28px; }
+  .cs-hero__media{ padding:32px 24px; }
+
+  .cs-section{ gap:40px; }
+  .cs-block{ gap:28px; }
+  .cs-titled-prose{ gap:12px; }
+  .cs-h2{ font-size:28px; }
+  .cs-h3{ font-size:22px; }
+  .cs-body,.cs-prose li{ font-size:17px; line-height:1.7; }
+  .cs-prose{ max-width:none; }
+
+  .cs-split{ flex-direction:column !important; gap:28px; }
+  .cs-split__text{ flex:1 1 auto; max-width:none; }
+
+  .cs-overview{ flex-direction:column; gap:32px; }
+  .cs-overview__main{ flex:1 1 auto; max-width:none; padding-right:0; }
+  .cs-metarow{ flex-direction:column; gap:6px; padding:0; }
+  .cs-metarow__label{ flex:none; }
+
+  .cs-callout{ padding:48px 24px; gap:32px; }
+  .cs-callout__title{ font-size:24px; }
+
+  .cs-figrow{ flex-direction:column; padding:24px; gap:24px; }
+  .cs-figrow--plain{ padding:0; }
+  .cs-figrow .cs-fig img{ height:auto; }
+  .cs-cards{ grid-template-columns:1fr; }
+  .cs-decision{ padding:28px; gap:20px; }
+
+  .cs-impact{ padding:60px 24px; gap:32px; }
+  .cs-impact__inner{ gap:32px; }
+  .cs-statgrid{ flex-direction:column; }
+  /* a shared minimum height so all three cards read as one consistent
+     row of tiles even though "Search to book conversion" wraps to more
+     lines than "Drop-off rate" does. */
+  .cs-statcard{ min-height:104px; justify-content:center; }
+  .cs-statcard__num{ font-size:34px; }
+  /* qualitative outcome titles (e.g. "Faster Decisions") are short
+     phrases, not a number + unit — the 34px numeric size above reads
+     oversized for them, so bring it back down on mobile. */
+  .cs-statcard__num--text{ font-size:18px; }
+
+  /* one lesson per row — easier to read than two narrow columns */
+  .cs-learnings__grid{ grid-template-columns:1fr; gap:20px; }
+
+  /* ---------- about page ---------- */
+  .about-hero__inner{
+    flex-direction:column-reverse; /* portrait is the last DOM child; reversing puts it on top */
+    gap:24px;
+    padding-top:24px;
+  }
+  .about-hero__title{ font-size:24px; text-wrap:balance; }
+  .about-hero__portrait{
+    width:100%; height:220px; /* wide and short, not the tall desktop square */
+  }
+  .about-hero__portrait img{
+    object-fit:cover; object-position:top center; /* crop to the top half rather than shrink to fit */
+  }
+  /* .about-hero__text uses align-items:flex-start, so its flex children
+     (this row included) shrink-wrap to content width by default — an
+     explicit width is needed here before align-items:stretch can do
+     anything for the buttons inside it. */
+  .about-hero__actions{ width:100%; flex-direction:column; align-items:stretch; }
+  .about-hero__actions .btn{ width:100%; }
+
+  .principles__grid{ grid-template-columns:1fr; }
+  .principle p{ font-size:14px; }
+
+  .gallery__grid{ grid-template-columns:1fr 1fr; gap:12px; }
+  .gallery__item{ border-radius:16px; }
+  .gallery__item figcaption{ padding:14px 12px; font-size:12px; line-height:1.35; }
+
+  .awards__credentials{ grid-template-columns:1fr; }
+
+  /* Cannes Lions banner: the desktop version bleeds the mockup past the
+     card edges with badges absolutely pinned over it, and links out to
+     thebirdwatcher.ai — at mobile width it becomes a plain non-linking
+     showcase card (logo + medals only, no mockup, no click-through). */
+  .awards__project{
+    min-height:0; padding:28px 24px 32px;
+    display:flex; flex-direction:column; gap:32px;
+    pointer-events:none;
+  }
+  .awards__project-badges{ position:static; width:100%; gap:20px; }
+  .awards__project-head{ width:100%; justify-content:space-between; }
+  .awards__project-media{ display:none; }
+  .awards__project-cta{ display:none; }
+}
+

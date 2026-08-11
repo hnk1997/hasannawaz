@@ -1,0 +1,35 @@
+/* Case study pages: reconcile hasannawaz.com's white layout with our own
+   fixed dark nav and white footer.
+   The source pages shipped their own `.nav` / `.footer`; those blocks are gone,
+   so anything that assumed their metrics is re-stated here. */
+
+/* Our nav is fixed and 64px tall; the source hero assumed its own header. */
+.cs-page .cs-hero{padding-top:104px}
+
+/* The source footer was dark-on-dark; ours is the white component from the
+   homepage, so give it a rule above rather than letting it merge into the page. */
+.cs-page .framer-13ep8t1{border-top:1px solid rgba(0,0,0,.1)}
+
+/* Case study body copy is dark; the footer component is authored for the
+   homepage where these tokens resolve against a white band, so they already
+   read correctly. Nothing to restate -- kept as a marker for future edits. */
+
+@media (max-width:809.98px){
+  .cs-page .cs-hero{padding-top:88px}
+}
+
+/* ---- no scroll-triggered appear effects -------------------------------
+   The source shipped .reveal (opacity:0 + 24px offset) with .reveal.is-in
+   fading each block in as it scrolls past. The page-load wipe is the only
+   entrance we want, so content is simply present. The observer in
+   casestudy.js still adds .is-in; that is now a no-op. */
+.cs-page .reveal,
+.cs-page .reveal.is-in{opacity:1!important;transform:none!important;transition:none!important}
+
+/* ---- wallet hero mockup, 25% smaller ----------------------------------
+   .cs-hero__media--tiny is shared with dxb.html, so this is scoped to the
+   wallet page rather than changing the shared variant. */
+.cs-wallet .cs-hero__media--tiny img{max-width:min(100%,230px)}
+@media (max-width:809.98px){
+  .cs-wallet .cs-hero__media--tiny img{max-width:min(100%,115px)}
+}

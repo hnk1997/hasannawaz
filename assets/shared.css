@@ -1,0 +1,191 @@
+/* Shared header + footer components.
+   index.html and about.html were scraped as separate Framer pages, so each
+   carries its own full stylesheet and the two copies of the header/footer
+   rules drifted apart (the about footer stacked differently on mobile).
+   This file is the single source of truth for those components and is linked
+   LAST on every page, so it wins regardless of what the page sheet says.
+   Add header/footer changes here only -- never in index.css or about.css. */
+
+/* Paint the page dark from the very first frame. Without this the browser
+   shows its default white canvas until the page sheet resolves, which flashed
+   white behind the masked #main just before the wipe. */
+html{background:#050505}
+
+/* ------------------------------------------------------- page transition -- */
+/* Ported verbatim from Framer's own `wipe` mask in framer.BmPogxXa.mjs:
+     black  calc(calc(0% - W) + calc(calc(100% + W) * offset))
+     transparent calc(calc(100% + W) * offset)
+   with angle 0 (=> 90deg), width 100%, offset animating 0 -> 1. The stops sit
+   a full element-width apart, so the edge is heavily feathered -- that soft
+   ramp is what makes it read as smooth rather than as a sweeping hard line.
+   Framer's enter also sets opacity:1, i.e. opacity does NOT animate: it is a
+   pure wipe, no fade. Transition is a 0.7s tween on ease [.27,0,.51,1]. */
+@property --wipe-offset{syntax:'<number>';initial-value:0;inherits:false}
+
+@keyframes hn-page-enter{from{--wipe-offset:0}to{--wipe-offset:1}}
+
+.hn-page-enter{
+  -webkit-mask-image:linear-gradient(90deg,
+    black calc(calc(0% - 100%) + calc(calc(100% + 100%) * var(--wipe-offset))),
+    transparent calc(calc(100% + 100%) * var(--wipe-offset)));
+  mask-image:linear-gradient(90deg,
+    black calc(calc(0% - 100%) + calc(calc(100% + 100%) * var(--wipe-offset))),
+    transparent calc(calc(100% + 100%) * var(--wipe-offset)));
+  animation:hn-page-enter .7s cubic-bezier(.27,0,.51,1) both;
+}
+@media (prefers-reduced-motion:reduce){
+  .hn-page-enter{animation:none;-webkit-mask-image:none;mask-image:none}
+}
+
+/* -------------------------------------------------------------- wrappers -- */
+.framer-13xxqtg-container{z-index:1;flex:none;height:auto;position:fixed;top:0;left:0;right:0}
+.framer-11lqss6-container{flex:none;width:100%;height:auto;position:relative}
+
+/* ------------------------------------------------------------------ nav --- */
+.hn-nav-role{white-space:nowrap}
+
+/* --------------------------------------------------------------- footer --- */
+.framer-m108ey{height:auto!important;gap:38px!important;padding:0 50px!important;
+  align-items:center!important;justify-content:flex-start!important}
+.framer-1ltbtd4{flex:1 1 auto!important;width:auto!important}
+.framer-14hflou,.framer-1qgkn03{width:auto!important;flex:none!important;white-space:nowrap}
+
+.hn-footer-email{flex:none!important;white-space:nowrap;position:relative}
+.hn-footer-email a{cursor:pointer}
+
+.hn-socials{display:flex!important;align-items:center;gap:14px;flex:none!important;margin-left:4px}
+.hn-socials a{display:flex;align-items:center;justify-content:center;
+  width:16px;height:16px;color:rgb(0,0,0);opacity:.75;transition:opacity .2s}
+.hn-socials a:hover{opacity:1}
+
+@media (max-width:1371.98px){
+  .framer-m108ey{flex-wrap:wrap!important;gap:20px 28px!important;padding:0 40px!important}
+  .framer-1ltbtd4{flex:1 0 100%!important}
+}
+
+@media (max-width:809.98px){
+  .framer-13ep8t1{width:100%!important;height:auto!important;
+    padding:52px 20px!important;gap:28px!important}
+  .framer-m108ey{flex-wrap:wrap!important;align-items:center!important;
+    justify-content:flex-start!important;align-content:flex-start!important;
+    gap:16px 22px!important;padding:0!important;width:100%!important;height:auto!important}
+  .framer-1ltbtd4{flex:1 0 100%!important;width:100%!important;gap:6px!important}
+  .framer-zggrto,.framer-13rx2oc{width:100%!important}
+  .framer-14hflou,.framer-1qgkn03,.hn-footer-email,.hn-socials{flex:none!important}
+  .hn-nav-role{display:none}
+}
+
+/* ============================================== buttons (all pages) =======
+   One component for every CTA on the site. Previously the about page had
+   .hn-cta, the Framer "Read More" button had .framer-1xhaclz, and the case
+   study pages had .btn -- three different looks. They are unified here and
+   this file loads last on every page, so it wins.
+   Hover: 2px lift on a spring curve with a light sheen sweeping across.
+   !important on the box metrics because Framer ships the Read More button as
+   `.framer-DYtJi .framer-1xhaclz` (0,2,0), which outranks these selectors. */
+.hn-cta,.hn-cta-row .hn-cta,
+.framer-1xhaclz,
+.cs-page .btn{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:inline-flex!important;align-items:center;justify-content:center;gap:8px;
+  height:46px!important;padding:0 24px!important;border-radius:10px!important;
+  font-family:"Inter","Inter Placeholder",sans-serif!important;
+  font-size:14px!important;font-weight:600!important;line-height:1!important;
+  letter-spacing:-0.01em;text-decoration:none;white-space:nowrap;width:auto!important;
+  border:0;cursor:pointer;will-change:transform;
+  transition:transform .45s cubic-bezier(.16,1,.3,1),
+             box-shadow .45s cubic-bezier(.16,1,.3,1),
+             background-color .3s ease,color .3s ease;}
+
+.hn-cta::before,.framer-1xhaclz::before,.cs-page .btn::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.5) 50%,transparent 75%);
+  transform:translateX(-120%);
+  transition:transform .7s cubic-bezier(.16,1,.3,1);}
+.hn-cta:hover::before,.hn-cta:focus-visible::before,
+.framer-1xhaclz:hover::before,.framer-1xhaclz:focus-visible::before,
+.cs-page .btn:hover::before,.cs-page .btn:focus-visible::before{transform:translateX(120%)}
+
+.hn-cta:hover,.hn-cta:focus-visible,
+.framer-1xhaclz:hover,.framer-1xhaclz:focus-visible,
+.cs-page .btn:hover,.cs-page .btn:focus-visible{transform:translateY(-2px)}
+.hn-cta:active,.framer-1xhaclz:active,.cs-page .btn:active{transform:translateY(0);transition-duration:.12s}
+.hn-cta:focus-visible,.framer-1xhaclz:focus-visible,.cs-page .btn:focus-visible{
+  outline:2px solid rgba(120,170,255,.9);outline-offset:3px}
+
+/* dark surfaces (homepage / about) -> white button */
+.hn-cta-primary,.framer-1xhaclz{background:#fff!important;color:#0a0a0a!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.hn-cta-primary:hover,.hn-cta-primary:focus-visible,
+.framer-1xhaclz:hover,.framer-1xhaclz:focus-visible{
+  box-shadow:0 10px 26px -8px rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.4)}
+.framer-1xhaclz .framer-text{color:#0a0a0a!important}
+
+.hn-cta-secondary{background:rgba(255,255,255,.02);
+  color:var(--token-d925fd9d-b32e-4810-86da-a78346415874,#fff);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.hn-cta-secondary::before{
+  background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.14) 50%,transparent 75%)}
+.hn-cta-secondary:hover,.hn-cta-secondary:focus-visible{background:rgba(255,255,255,.07);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),0 10px 24px -12px rgba(0,0,0,.8)}
+
+/* light surfaces (case studies) -> dark button */
+.cs-page .btn,.cs-page .btn--primary{background:#0a0a0a!important;color:#fff!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.cs-page .btn::before{
+  background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.22) 50%,transparent 75%)}
+.cs-page .btn:hover,.cs-page .btn:focus-visible{
+  box-shadow:0 10px 26px -10px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.2)}
+.cs-page .btn__arrow{font-size:18px;line-height:1}
+
+@media (prefers-reduced-motion:reduce){
+  .hn-cta,.framer-1xhaclz,.cs-page .btn,
+  .hn-cta::before,.framer-1xhaclz::before,.cs-page .btn::before{transition:none}
+  .hn-cta:hover,.framer-1xhaclz:hover,.cs-page .btn:hover{transform:none}
+}
+@media (max-width:809.98px){
+  .hn-cta-row{margin-top:24px;gap:10px}
+  .hn-cta{height:44px;padding:0 18px;flex:1 1 auto}
+}
+
+/* ================================ next case study card (light homepage) ===
+   The source fixed the media box at 540px tall and used object-fit:contain, so
+   a 1216x697 poster painted 562x322 inside a 562x540 box -- roughly 200px of
+   dead space above and below. Letting the box size to the image removes the
+   letterboxing without cropping, and the portrait phone shots (340x697) keep a
+   height cap so they do not tower over the text column. */
+.cs-page .case{border-radius:30px;background:#f4f6f8;border:1px solid rgba(0,0,0,.08)}
+.cs-page .case__media{height:auto!important;overflow:hidden;border-radius:18px}
+.cs-page .case__media img{width:100%;height:auto!important;object-fit:contain;border-radius:0}
+.cs-page .case__media--portrait img{width:auto;max-width:100%;max-height:540px}
+/* No zoom on hover here. The media box is sized to the image exactly, so any
+   scale immediately overflows and clips the top and bottom. The card's own
+   lift and shadow carry the interaction instead. */
+
+@media (max-width:809.98px){
+  .cs-page .case__media img{max-height:300px;object-fit:contain}
+  .cs-page .case__media--portrait img{max-height:340px}
+}
+
+/* Black CTA, used where a white button would read as too loud. */
+.hn-cta-dark{background:#0a0a0a!important;color:#fff!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 1px 2px rgba(0,0,0,.4)}
+.hn-cta-dark .framer-text{color:#fff!important}
+.hn-cta-dark::before{
+  background:linear-gradient(115deg,transparent 25%,rgba(255,255,255,.22) 50%,transparent 75%)}
+.hn-cta-dark:hover,.hn-cta-dark:focus-visible{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 12px 28px -10px rgba(0,0,0,.9)}
+
+/* ============================================ more-case-studies.html ====== */
+.hn-more-main{padding-top:150px!important;height:auto!important;min-height:100vh}
+.hn-more-head{width:100%;margin-bottom:52px}
+.hn-more-title{font-family:"Inter Tight","Inter Tight Placeholder",sans-serif;
+  font-weight:600;font-size:40px;letter-spacing:-0.02em;line-height:1.15em;
+  color:#fff;margin:0}
+.hn-more-row{padding:8px 0 44px;display:flex}
+
+@media (max-width:809.98px){
+  .hn-more-main{padding-top:112px!important}
+  .hn-more-title{font-size:30px}
+  .hn-more-head{margin-bottom:36px}
+}

@@ -252,7 +252,12 @@
       if (Number.isNaN(to)) return;
       const suffix = el.getAttribute("data-counter-suffix") || "";
       const decimals = (raw.split(".")[1] || "").length;
-      const prefix = to > 0 ? "+" : "";
+      // Most stats are deltas (+59%, -40%), so "+" is the right default for
+      // any positive value. A rate like "22% adoption" isn't a delta though,
+      // so data-counter-prefix="" opts a specific stat out of the auto-sign.
+      const prefix = el.hasAttribute("data-counter-prefix")
+        ? el.getAttribute("data-counter-prefix")
+        : to > 0 ? "+" : "";
       const target = $("[data-counter-el]", el) || el;
       const format = (v) => prefix + v.toFixed(decimals) + suffix;
 

@@ -40,6 +40,21 @@ html body { background: rgb(5, 5, 5); }
 [data-framer-name="Image Link"] img{transition:transform .6s cubic-bezier(.16,1,.3,1)}
 [data-framer-name="Image Link"]:hover img{transform:scale(1.04)}
 
+/* Whole-card link: display:contents makes the wrapping <a> invisible to layout
+   (it stays in the DOM/accessibility tree but generates no box of its own), so
+   its two children -- text block and image -- keep behaving exactly like the
+   direct flex children .framer-1paiupn expects, just now both inside one link.
+   Hover still needs restating from the anchor: :hover on a display:contents
+   element does propagate correctly from its rendered children, but the old
+   rule was scoped to hovering the image specifically, which is no longer the
+   full clickable area. */
+.hn-card-link{display:contents}
+.hn-card-link:hover [data-framer-name="Image Link"] img{transform:scale(1.04)}
+/* display:contents removes the link's own box, so a keyboard :focus-visible
+   ring has nothing to draw around by default. Draw it on the image instead. */
+.hn-card-link:focus-visible [data-framer-name="Image Link"]{
+  outline:2px solid rgba(120,170,255,.9);outline-offset:2px}
+
 /* Awards: same 1008px column and column rhythm as the case-study cards. */
 .framer-1c66907{height:auto!important;min-height:0!important;padding:110px 0!important}
 .hn-awards-inner{display:flex;flex-direction:column;gap:40px;width:70%;margin:0 auto}

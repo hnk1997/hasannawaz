@@ -179,9 +179,6 @@ html body { background: rgb(5, 5, 5); }
     height:var(--framer-aspect-ratio-supported,560px)!important;filter:blur(46px)!important}
   .framer-3o2tl7,.framer-qlpyer{width:420px!important;
     height:var(--framer-aspect-ratio-supported,420px)!important;filter:blur(22px)!important}
-
-  /* "| Senior Product Designer" does not fit beside the nav links here. */
-  .hn-nav-role{display:none}
 }
 
 @media (max-width:479.98px){

@@ -61,8 +61,6 @@ html body { background: rgb(255, 255, 255); }
   .framer-1ltbtd4{flex:1 0 100%!important;width:100%!important;gap:6px!important}
   .framer-zggrto,.framer-13rx2oc{width:100%!important}
   .framer-14hflou,.framer-1qgkn03,.hn-footer-email,.hn-socials{flex:none!important}
-
-  .hn-nav-role{display:none}
 }
 
 /* Header and footer wrappers lifted from index.css so both pages use the

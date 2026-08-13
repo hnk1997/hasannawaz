@@ -68,7 +68,7 @@ html body { background: rgb(5, 5, 5); }
 /* Writing: shares the Awards band and its .hn-awards-inner/.hn-awards-head
    for the same light section and column width, one continuous band rather
    than two -- the extra margin here is the only seam between the two. */
-.hn-writing-head{margin-top:24px}
+.hn-writing-head{margin-top:56px}
 .hn-writing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;width:100%}
 .hn-writing-card{display:flex;flex-direction:column;gap:12px;padding:28px;
   border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.08);

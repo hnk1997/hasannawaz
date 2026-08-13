@@ -65,6 +65,24 @@ html body { background: rgb(5, 5, 5); }
 .hn-award-list{margin-top:14px}
 .hn-award-line{margin:0}
 
+/* Writing: reuses the Awards band (.framer-1c66907) and heading
+   (.hn-awards-inner/.hn-awards-head) wholesale for the same light section
+   and column width; only the card grid below the heading is new. */
+.hn-writing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;width:100%}
+.hn-writing-card{display:flex;flex-direction:column;gap:12px;padding:28px;
+  border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.08);
+  text-decoration:none;transition:transform .25s ease,box-shadow .25s ease}
+.hn-writing-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(0,0,0,.08)}
+.hn-writing-meta{font-family:"Inter Tight","Inter Tight Placeholder",sans-serif;
+  font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;
+  color:rgb(134,134,139)}
+.hn-writing-title{font-family:"Inter",sans-serif;font-size:19px;font-weight:700;
+  line-height:1.3em;letter-spacing:-.3px;color:rgb(51,51,51)}
+.hn-writing-desc{font-family:"Inter",sans-serif;font-size:15px;font-weight:400;
+  line-height:1.55em;color:rgb(110,110,115)}
+.hn-writing-cta{margin-top:auto;padding-top:4px;font-family:"Inter Tight",
+  "Inter Tight Placeholder",sans-serif;font-size:14px;font-weight:600;color:rgb(51,51,51)}
+
 .hn-socials{display:flex;align-items:center;gap:14px}
 .hn-socials a{display:flex;align-items:center;justify-content:center;
   width:16px;height:16px;color:rgb(0,0,0);opacity:.75;transition:opacity .2s}
@@ -76,6 +94,7 @@ html body { background: rgb(5, 5, 5); }
   .hn-awards-media{flex:0 0 auto;max-width:100%;width:100%}
   .hn-metrics-row{gap:20px}
   .hn-metric-value{font-size:19px}
+  .hn-writing-grid{grid-template-columns:1fr;gap:20px}
 }
 
 /* More air between each case study's divider rule and its text (Sati's 20px

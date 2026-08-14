@@ -222,7 +222,7 @@
       let resetTimer = null;
       el.addEventListener("click", async (e) => {
         e.preventDefault();
-        const value = el.getAttribute("data-copy-email") || "hello@hasannawaz.com";
+        const value = el.getAttribute("data-copy-email") || "hasannawazux@gmail.com";
         try {
           await navigator.clipboard.writeText(value);
         } catch {

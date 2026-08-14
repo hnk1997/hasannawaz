@@ -136,6 +136,38 @@ html body { background: rgb(5, 5, 5); }
 .framer-o00XK .framer-1g3fnqe{
   background:conic-gradient(#F97316 0deg,#2563EB 180deg,#E11D48 360deg)}
 
+/* ============================================================ tablet ======
+   Framer's split is at 1372px, so a 1366px iPad Pro and an 810px iPad both
+   render the same variant -- one authored for the small end. That left the
+   type frozen at phone-ish sizes across the whole range (26px hero, 19px
+   titles, 13px body) while the 70% track wasted ~125px of margin a side at
+   810px. Scale the column and the type with the viewport instead, and stop
+   the hero's three lines competing the way they did on mobile. */
+@media (min-width:810px) and (max-width:1371.98px){
+  /* 70%-of-viewport left the column at 584px on a 834px iPad; converge on the
+     same 1008px measure desktop uses as the width allows. */
+  .framer-17hcr7g{width:min(90%,1008px)!important;max-width:none!important}
+  .hn-awards-inner{width:min(90%,1008px)!important}
+
+  .framer-1yum67l h1 span{font-size:clamp(30px,3.2vw,37px)!important;line-height:1.16em!important}
+  /* Tracks the hero so the caption stays subordinate at both ends of the
+     range rather than reading tiny under a 37px headline at 1366. */
+  .framer-1uprzc1 h1,.framer-1uprzc1 p{font-size:clamp(17px,1.5vw,20px)!important;
+    line-height:1.5em!important;font-weight:400!important;color:rgb(155,155,158)!important}
+
+  .framer-18ux4gg h3{font-size:22px!important;line-height:1.25em!important}
+  /* 14px matches desktop, which holds the card copy to two lines once the
+     column reaches its 1008px measure. */
+  .framer-nz54g9 p{font-size:14px!important;line-height:1.6em!important}
+  .hn-metric-value{font-size:20px!important}
+  .hn-metric-label{font-size:11px!important}
+
+  /* Three fixed columns squeezed the cards to 173px here; a flat single column
+     stretched them to 896px. Let the track count follow the available width --
+     three across once the column can carry ~260px each, two below that. */
+  .hn-writing-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;gap:20px!important}
+}
+
 /* ============================================================ mobile ======
    The capture only preserved two of Framer's breakpoints (the split is at
    1372px), so every width below that inherited the ~810px tablet layout and a
@@ -147,38 +179,73 @@ html body { background: rgb(5, 5, 5); }
   /* Full-bleed column with 20px gutters instead of the desktop 70% track. */
   .framer-12gt9i7{padding-top:104px!important}
   .framer-17hcr7g{width:100%!important;padding:4px 20px 0!important;
-    box-sizing:border-box;gap:52px!important}
+    box-sizing:border-box;gap:40px!important}
 
-  /* Hero: portrait above the text rather than beside it. */
-  .framer-j3rrya{flex-direction:column!important;align-items:flex-start!important;gap:26px!important}
+  /* Hero: portrait above the text rather than beside it. Desktop runs the
+     name, the role and the location at near-identical size/weight, which on
+     a phone reads as three competing headlines. Keep the two name lines as
+     the headline and demote the location to a caption. */
+  .framer-j3rrya{flex-direction:column!important;align-items:flex-start!important;gap:20px!important}
   .framer-1dzmpuz{width:100%!important;flex:none!important}
-  .framer-mie2dp{width:96px!important;height:96px!important}
+  .framer-mie2dp{width:84px!important;height:84px!important}
   .framer-1yum67l,.framer-1uprzc1{width:100%!important}
+  .framer-1yum67l h1 span{font-size:28px!important;line-height:1.18em!important}
+  .framer-1uprzc1 h1,.framer-1uprzc1 p{font-size:15px!important;line-height:1.5em!important;
+    font-weight:400!important;color:rgb(155,155,158)!important}
 
-  /* Case study card: one column, left aligned, company last. */
-  .framer-1paiupn{gap:30px!important}
-  .framer-1br8lqy{gap:56px!important}
+  /* Case study: a self-contained card rather than a loose stack under a rule.
+     Desktop is title | body | company in a row with the image below; stacking
+     that verbatim on mobile put the image last (detached from its own title)
+     and left the company name floating alone above it. Here the image leads as
+     the visual anchor and the company becomes an eyebrow over the title, so
+     the whole thing reads -- and taps -- as one object. */
+  .framer-1br8lqy{gap:24px!important}
+  .framer-1paiupn{gap:0!important;padding:0!important;
+    background:rgba(255,255,255,.035)!important;border:1px solid rgba(255,255,255,.08)!important;
+    border-radius:18px!important;overflow:hidden!important}
+  .framer-1qe5imw{padding:0 16px 18px!important}
   .framer-52da6t{flex-direction:column!important;align-items:stretch!important;
-    gap:14px!important;padding-top:30px!important}
+    gap:8px!important;padding-top:16px!important;--border-top-width:0px!important}
   .framer-18ux4gg,.framer-nz54g9,.framer-1q2747z{width:100%!important;flex:none!important}
-  .framer-18ux4gg h3{font-size:22px!important;line-height:1.25em!important}
-  .framer-nz54g9 p{font-size:15px!important}
-  .framer-1q2747z p{text-align:left!important;font-size:13px!important}
+  .framer-1q2747z{order:-1!important}
+  .framer-1q2747z p{text-align:left!important;font-size:11px!important;font-weight:600!important;
+    letter-spacing:.09em!important;text-transform:uppercase!important;color:rgb(150,150,155)!important}
+  .framer-18ux4gg h3{font-size:20px!important;line-height:1.25em!important}
+  .framer-nz54g9 p{font-size:14.5px!important;line-height:1.55em!important;color:rgb(196,196,200)!important}
 
-  /* Match the desktop crop (1008x560) instead of a fixed 330px-tall box. */
-  .framer-1bfxqvy{height:auto!important;aspect-ratio:1008/560!important;border-radius:18px!important}
+  /* Image leads the card and meets its rounded edges, so the radius moves to
+     the card and the crop matches the desktop 1008x560. */
+  .framer-1bfxqvy{order:-1!important;height:auto!important;
+    aspect-ratio:1008/560!important;border-radius:0!important;width:100%!important}
 
-  .hn-metrics-row{gap:18px 22px!important;margin-top:18px!important}
-  .hn-metric-value{font-size:20px}
-  .hn-metric-label{font-size:11px}
+  /* One row whatever the count: flex:1 1 0 splits evenly across two or three
+     metrics, where a fixed grid left a hole on the two-metric cards and a
+     50%-basis wrap left an orphan third on the three-metric ones. */
+  .hn-metrics-row{display:flex!important;flex-wrap:nowrap!important;
+    gap:12px!important;margin-top:16px!important}
+  .hn-metric{flex:1 1 0!important;min-width:0!important}
+  .hn-metric-value{font-size:17px}
+  .hn-metric-label{font-size:10px;line-height:1.3em}
 
   /* Awards shares the same gutters as the cards. */
-  .framer-1c66907{padding:84px 0!important}
-  .hn-awards-inner{width:100%!important;padding:0 20px!important;box-sizing:border-box;gap:32px!important}
+  .framer-1c66907{padding:72px 0!important}
+  .hn-awards-inner{width:100%!important;padding:0 20px!important;box-sizing:border-box;gap:26px!important}
   .hn-awards-head h2{font-size:34px!important;letter-spacing:-1.2px!important}
   .hn-awards-copy h2{font-size:21px!important}
-  .hn-award-link{font-size:18px!important}
-  .hn-award-line{font-size:16px!important}
+  .hn-award-link{font-size:17px!important}
+  .hn-award-line{font-size:15px!important}
+  .hn-band-gap{margin-top:44px!important}
+
+  /* Writing cards carried desktop's padding and type into a 350px column,
+     which made three near-identical blocks dominate the band. */
+  /* One column on a phone, but a 768px portrait iPad still lands here and a
+     728px-wide card reads stretched -- let the count follow the width. */
+  .hn-writing-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important;gap:14px!important}
+  .hn-writing-card{padding:18px!important;gap:8px!important;border-radius:14px!important}
+  .hn-writing-meta{font-size:10.5px!important}
+  .hn-writing-title{font-size:16.5px!important;line-height:1.3em!important}
+  .hn-writing-desc{font-size:13.5px!important;line-height:1.5em!important}
+  .hn-writing-cta{font-size:12.5px!important;padding-top:2px!important}
 
   /* Footer: name on its own line, then the links wrap beneath it. */
   .framer-13ep8t1{width:100%!important;height:auto!important;
@@ -202,15 +269,15 @@ html body { background: rgb(5, 5, 5); }
 }
 
 @media (max-width:479.98px){
-  .framer-18ux4gg h3{font-size:20px!important}
+  .framer-18ux4gg h3{font-size:19px!important}
   .hn-awards-head h2{font-size:30px!important}
-  /* Two metrics per row rather than three cramped ones. */
-  .hn-metric{flex:0 0 calc(50% - 11px)}
 }
 
 /* Breathing room under the final case study before the Awards band. */
 .framer-1br8lqy{padding-bottom:44px!important;gap:52px!important}
 /* image -> next divider: 40px item padding + 52px gap = 92px */
+/* The cards carry their own border on mobile, so the gap between them is the
+   separator and no longer has to stand in for one. */
 @media (max-width:809.98px){
-  .framer-1br8lqy{padding-bottom:26px!important;gap:72px!important}
+  .framer-1br8lqy{padding-bottom:20px!important;gap:24px!important}
 }

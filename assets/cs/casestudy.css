@@ -90,7 +90,12 @@ body{
 
 h1,h2,h3,h4,h5,p,figure,blockquote{ margin:0; }
 a{ color:inherit; text-decoration:none; }
-img,video{ display:block; max-width:100%; }
+/* height:auto is required now that the markup carries intrinsic width/height
+   attributes -- those reserve the right box before the image loads (killing
+   the layout shift that lazy-loading would otherwise introduce), but without
+   this the attribute height would survive max-width scaling and squash the
+   image at any viewport narrower than its natural width. */
+img,video{ display:block; max-width:100%; height:auto; }
 
 /* ---------- image skeleton loading ----------
    Every <img> starts with a shimmering placeholder background and

@@ -67,9 +67,9 @@ html body { background: rgb(5, 5, 5); }
   background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:center;
   pointer-events:none}
-/* The zoom-on-hover would slide the blurred art under a static padlock; hold
-   it still so the lock reads as part of the card, not floating over it. */
-.hn-card-link:hover .hn-locked img{transform:none}
+/* The padlock sits still while the art zooms beneath it, the way a play
+   button behaves over a video thumbnail -- the card keeps the same hover
+   as every other case study. */
 
 /* Awards: same 1008px column and column rhythm as the case-study cards. */
 .framer-1c66907{height:auto!important;min-height:0!important;padding:110px 0!important}

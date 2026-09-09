@@ -359,7 +359,7 @@
     const pill = document.createElement("div");
     pill.className = "hn-cursor-pill";
     pill.setAttribute("aria-hidden", "true");
-    pill.textContent = "\uD83D\uDD12 Password Protected. Full case study coming soon.";
+    pill.textContent = "\uD83D\uDD12 Password Protected";
     document.body.appendChild(pill);
 
     let tx = 0, ty = 0, x = 0, y = 0, raf = null, on = false;

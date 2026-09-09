@@ -345,6 +345,81 @@
     });
   }
 
+
+  // --------------------------------------------------- locked-card cursor --
+  // The gated case study says so through the cursor rather than an overlay on
+  // the art: hovering the card swaps the pointer for a pill that trails it.
+  // Only runs where a real pointer exists -- touch has no hover, so the pill
+  // would have nothing to follow and hiding the cursor would be wrong.
+  function startLockedCursor() {
+    const cards = $$(".hn-locked");
+    if (!cards.length) return;
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const pill = document.createElement("div");
+    pill.className = "hn-cursor-pill";
+    pill.setAttribute("aria-hidden", "true");
+    pill.textContent = "\uD83D\uDD12 Password Protected. Full case study coming soon.";
+    document.body.appendChild(pill);
+
+    let tx = 0, ty = 0, x = 0, y = 0, raf = null, on = false;
+    const OFFSET_X = 16, OFFSET_Y = 18;
+
+    // Keep the pill inside the viewport near the right/bottom edges. Used by
+    // both the initial placement and the follow, so entering the card close
+    // to the right edge cannot park the pill off-screen.
+    const clamp = (cx, cy) => {
+      const w = pill.offsetWidth, h = pill.offsetHeight;
+      return [
+        Math.max(8, Math.min(cx + OFFSET_X, innerWidth - w - 8)),
+        Math.max(8, Math.min(cy + OFFSET_Y, innerHeight - h - 8)),
+      ];
+    };
+
+    const place = () => {
+      const [px, py] = clamp(tx, ty);
+      x += (px - x) * (reduced ? 1 : 0.22);
+      y += (py - y) * (reduced ? 1 : 0.22);
+      pill.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+      if (!reduced && (Math.abs(px - x) > 0.5 || Math.abs(py - y) > 0.5)) {
+        raf = requestAnimationFrame(place);
+      } else {
+        raf = null;
+      }
+    };
+
+    const move = (e) => {
+      tx = e.clientX; ty = e.clientY;
+      if (raf === null) raf = requestAnimationFrame(place);
+    };
+
+    cards.forEach((card) => {
+      const hit = card.closest(".hn-card-link") || card;
+      hit.addEventListener("pointerenter", (e) => {
+        if (e.pointerType && e.pointerType !== "mouse") return;
+        on = true;
+        // Land the pill under the cursor rather than sliding in from 0,0.
+        tx = e.clientX; ty = e.clientY;
+        const [px, py] = clamp(tx, ty);
+        x = px; y = py;
+        pill.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+        pill.classList.add("is-on");
+        document.addEventListener("pointermove", move);
+      });
+      hit.addEventListener("pointerleave", () => {
+        if (!on) return;
+        on = false;
+        pill.classList.remove("is-on");
+        document.removeEventListener("pointermove", move);
+        if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
+      });
+    });
+
+    // A click navigates away; drop the pill so it cannot linger over the
+    // next page during the transition.
+    addEventListener("pagehide", () => pill.classList.remove("is-on"));
+  }
+
   // ------------------------------------------------------------------ init --
   const init = () => {
     startAtTop();
@@ -356,6 +431,7 @@
     startCounters();
     startNestedLinks();
     startGate();
+    startLockedCursor();
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

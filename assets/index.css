@@ -55,21 +55,42 @@ html body { background: rgb(5, 5, 5); }
 .hn-card-link:focus-visible [data-framer-name="Image Link"]{
   outline:2px solid rgba(120,170,255,.9);outline-offset:2px}
 
-/* Locked case study: the thumbnail ships with the client's logos and name
+/* Locked case study. The thumbnail ships with the client's logos and name
    already blurred into the file itself -- a CSS filter would leave the
-   unmasked original sitting fetchable at its own URL. The work stays sharp;
-   only the marks are gone. This adds the padlock and a light scrim. */
+   unmasked original sitting fetchable at its own URL. Nothing is drawn over
+   the art: the "this is gated" signal is the cursor instead, so the work
+   reads unobstructed and the card keeps the same hover zoom as the rest. */
 .hn-locked{position:relative}
-.hn-locked::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;
-  background:rgba(0,0,0,.28);
-  /* the padlock, inlined so it needs no extra request */
-  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:center;
-  pointer-events:none}
-/* The padlock sits still while the art zooms beneath it, the way a play
-   button behaves over a video thumbnail -- the card keeps the same hover
-   as every other case study. */
+/* Swap the pointer for the pill while over the card. Only where a real
+   pointer exists -- on touch there is no hover, so the pill never shows and
+   the native cursor must not be hidden. */
+@media (hover:hover) and (pointer:fine){
+  .hn-card-link:has(.hn-locked):hover,
+  .hn-card-link:has(.hn-locked):hover *{cursor:none}
+}
+
+/* The pill itself: one per page, parked off-screen until a locked card is
+   hovered. pointer-events:none keeps it from ever eating the click. */
+.hn-cursor-pill{
+  position:fixed;top:0;left:0;z-index:60;
+  display:flex;align-items:center;gap:6px;
+  height:40px;padding:15px 19px 15px 15px;
+  border-radius:8px;background:#222;color:#fff;
+  font-family:"Inter","Inter Placeholder",sans-serif;
+  font-size:14px;font-weight:600;line-height:1;white-space:nowrap;
+  box-shadow:0 .706592px .706592px -.625px rgba(0,0,0,.15),
+    0 1.80656px 1.80656px -1.25px rgba(0,0,0,.14),
+    0 3.62176px 3.62176px -1.875px rgba(0,0,0,.14),
+    0 6.8656px 6.8656px -2.5px rgba(0,0,0,.13),
+    0 13.6468px 13.6468px -3.125px rgba(0,0,0,.1),
+    0 30px 30px -3.75px rgba(0,0,0,.05);
+  pointer-events:none;opacity:0;
+  transition:opacity .18s ease;
+  will-change:transform}
+.hn-cursor-pill.is-on{opacity:1}
+@media (prefers-reduced-motion:reduce){
+  .hn-cursor-pill{transition:none}
+}
 
 /* Awards: same 1008px column and column rhythm as the case-study cards. */
 .framer-1c66907{height:auto!important;min-height:0!important;padding:110px 0!important}

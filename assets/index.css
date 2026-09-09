@@ -55,9 +55,10 @@ html body { background: rgb(5, 5, 5); }
 .hn-card-link:focus-visible [data-framer-name="Image Link"]{
   outline:2px solid rgba(120,170,255,.9);outline-offset:2px}
 
-/* Locked case study: the thumbnail file itself ships pre-blurred (a CSS
-   filter would leave the sharp original sitting fetchable at its own URL),
-   so this only adds the padlock and a slight scrim for contrast. */
+/* Locked case study: the thumbnail ships with the client's logos and name
+   already blurred into the file itself -- a CSS filter would leave the
+   unmasked original sitting fetchable at its own URL. The work stays sharp;
+   only the marks are gone. This adds the padlock and a light scrim. */
 .hn-locked{position:relative}
 .hn-locked::after{
   content:"";position:absolute;inset:0;border-radius:inherit;

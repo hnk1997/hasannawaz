@@ -891,7 +891,7 @@ button{ font:inherit; }
    tiny-hero assets, so matching it by max-width alone still renders
    much taller — sized down further so it reads as the same scale. */
 .cs-hero__media--wallet img{ width:auto; max-width:min(100%,221px); margin:0 auto; }
-.cs-hero__media--neom img{ width:auto; max-width:min(100%,398px); margin:0 auto; }
+.cs-hero__media--ds img{ width:auto; max-width:min(100%,398px); margin:0 auto; }
 
 /* 16:9 by default — each embed can override with an inline
    aspect-ratio (e.g. style="aspect-ratio:1012/1812") so the container
@@ -1265,7 +1265,7 @@ button{ font:inherit; }
   .nav__inner{ min-height:80px; }
   .cs-hero__media--tiny img{ max-width:min(100%,153px); }
   .cs-hero__media--wallet img{ max-width:min(100%,110px); }
-  .cs-hero__media--neom img{ max-width:min(100%,199px); }
+  .cs-hero__media--ds img{ max-width:min(100%,199px); }
   .nav__burger{ display:flex; position:relative; z-index:101; }
   /* "Home" is covered by its own line item at the top of the
      expanded menu (see .nav__home-link below), so the text logo can

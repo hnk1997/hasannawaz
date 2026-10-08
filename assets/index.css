@@ -102,10 +102,46 @@ html body { background: rgb(5, 5, 5); }
 .hn-award-list{margin-top:14px}
 .hn-award-line{margin:0}
 
-/* Writing: shares the Awards band and its .hn-awards-inner/.hn-awards-head
-   for the same light section and column width, one continuous band rather
-   than two -- the extra margin here is the only seam between the two. */
-.hn-writing-head{margin-top:56px}
+/* Awards, Testimonials and Writing share one band and one column
+   (.framer-1c66907 / .hn-awards-inner / .hn-awards-head) rather than stacking
+   three separately padded sections. This margin is the only seam between
+   them, so it goes on every heading after the first. */
+.hn-band-gap{margin-top:56px}
+/* Testimonials: moved over from the About page, which scoped these component
+   styles to its own root class (.framer-DYtJi) -- rescoped to .framer-o00XK
+   here. The cards keep the masonry-via-CSS-columns treatment so each one is
+   its natural height with an even gap, which a fixed grid cannot do when the
+   quotes differ in length. The native 760px track is dropped so the grid
+   fills the shared column like the other blocks in this band. */
+/* Two explicit columns rather than CSS columns: column-count fills the first
+   column top-to-bottom, which would read 1,2,3 | 4,5. These read across --
+   1 left, 2 right, 3 left, 4 right, 5 left -- so the columns are declared. */
+.hn-testimonials{display:flex;align-items:flex-start;gap:24px;width:100%}
+.hn-testimonials__col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:24px}
+/* Sits with the testimonials, not adrift between them and Writing: the
+   container gap alone above it, the band seam below. */
+.hn-testimonials__cta{display:flex;justify-content:center;margin-top:0}
+.framer-o00XK .framer-1f84xr5{background-color:#fff;border-radius:20px;
+  display:flex;flex-flow:column;place-content:center flex-start;align-items:center;
+  gap:20px;width:100%;height:auto;padding:30px;position:relative;
+  margin:0;
+  box-shadow:0 .796192px 2.38858px -.625px #0000000d,0 2.41451px 7.24352px -1.25px #0000000d,
+  0 6.38265px 19.148px -1.875px #0000000d,0 20px 60px -2.5px #0000000d}
+.framer-o00XK .framer-1d2yrhx{display:flex;flex-flow:row;gap:15px;width:100%;
+  place-content:center flex-start;align-items:flex-start;position:relative;overflow:visible}
+.framer-o00XK .framer-ae808e{aspect-ratio:1;width:50px;height:50px;border-radius:50%;
+  flex:none;position:relative;overflow:hidden}
+/* the name/role column was a fixed 200px with overflow:hidden, which clipped
+   "Chief Operating Officer @ Sastaticket" */
+.framer-o00XK .framer-1wto91k{display:flex;flex-flow:column;align-items:flex-start;
+  place-content:flex-start center;width:auto;flex:1 1 auto;min-width:0;
+  position:relative;overflow:visible}
+.framer-o00XK .framer-9oe6gt,.framer-o00XK .framer-1yoihn1{width:100%;
+  white-space:normal;position:relative;overflow:visible}
+.framer-o00XK .framer-90s5xd > p + p{margin-top:1em}
+.framer-o00XK .framer-90s5xd{width:100%;white-space:pre-wrap;word-break:break-word;
+  word-wrap:break-word;position:relative;overflow:visible}
+
 .hn-writing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;width:100%}
 .hn-writing-card{display:flex;flex-direction:column;gap:12px;padding:28px;
   border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.08);
@@ -272,6 +308,17 @@ html body { background: rgb(5, 5, 5); }
   .hn-award-link{font-size:17px!important}
   .hn-award-line{font-size:15px!important}
   .hn-band-gap{margin-top:44px!important}
+
+  /* Testimonials: two columns on a phone clipped the longer job titles, so they
+     stack. display:contents promotes the cards to the flex container so the
+     declared left/right split can resume its read-across order here. */
+  .hn-testimonials{flex-direction:column;gap:20px}
+  .hn-testimonials__col{display:contents}
+  .hn-testimonials__col:first-child > :nth-child(1){order:1}
+  .hn-testimonials__col:last-child  > :nth-child(1){order:2}
+  .hn-testimonials__col:first-child > :nth-child(2){order:3}
+  .hn-testimonials__col:last-child  > :nth-child(2){order:4}
+  .hn-testimonials__col:first-child > :nth-child(3){order:5}
 
   /* Writing cards carried desktop's padding and type into a 350px column,
      which made three near-identical blocks dominate the band. */

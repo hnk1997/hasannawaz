@@ -50,8 +50,6 @@ html body { background: rgb(255, 255, 255); }
 
   .hn-bio p{font-size:16px!important}
 
-  .framer-yff5lt{width:100%!important;padding:0 20px!important;box-sizing:border-box!important;column-count:1!important}
-
   .framer-13ep8t1{width:100%!important;height:auto!important;
     padding:52px 20px!important;gap:28px!important}
   .framer-m108ey{flex-wrap:wrap!important;align-items:center!important;
@@ -73,40 +71,56 @@ html body { background: rgb(255, 255, 255); }
    than floating centred over left-aligned text. */
 .framer-6xtm{padding:132px 0 0!important}
 .hn-about-media{justify-content:start!important;justify-items:start!important}
-.framer-1g40628{padding-top:56px!important;gap:22px!important}
+/* The dark section used to end flush against the light band, right on the
+   CTA buttons. This is the gap between the two. */
+.framer-1g40628{padding-top:56px!important;padding-bottom:76px!important;gap:22px!important}
 .framer-1udy7n8{padding-top:76px!important}
-.framer-ay3odp{padding-top:76px!important}
 .framer-714rdi{gap:24px!important}
-.framer-yff5lt{gap:24px!important}
 
 @media (max-width:809.98px){
   .framer-6xtm{padding:104px 0 0!important}
   .framer-1g40628{padding-top:40px!important}
   .framer-1udy7n8{padding-top:56px!important}
-  .framer-ay3odp{padding-top:56px!important;width:100%!important;
-    padding-left:20px!important;padding-right:20px!important;box-sizing:border-box!important}
   .framer-1kanu8x{height:var(--framer-aspect-ratio-supported,300px)!important}
 }
 
-/* ---- testimonial cards -------------------------------------------------
-   The name/role column was a fixed 200px with overflow:hidden, which cut off
-   "Design Manager @ Sastaticket". The grid also forced every row to the height
-   of the tallest card (minmax(0,1fr) + height:100%), so short cards stretched. */
-/* Bento/masonry: CSS columns let each card keep its natural height while the
-   gap between every pair stays identical, which a 2x2 grid cannot do when the
-   cards differ in length. */
-.framer-yff5lt{display:block!important;column-count:2;column-gap:24px;
-  grid-template-rows:none!important;grid-template-columns:none!important}
-.framer-1f84xr5{height:auto!important;width:100%!important;
-  break-inside:avoid;-webkit-column-break-inside:avoid;margin:0 0 24px!important}
-.framer-1d2yrhx{overflow:visible!important;align-items:flex-start!important}
-.framer-1wto91k{width:auto!important;flex:1 1 auto!important;min-width:0!important;
+/* ---- work experience on a light band -----------------------------------
+   The section used to sit on the page's dark .framer-6xtm wrapper. It now
+   reads as a light band, the way the Testimonials block did before it moved
+   to the homepage. The section itself is only a 760px track, so the colour
+   is carried past its edges with a box-shadow rather than by restructuring
+   the Framer wrappers around it. Every text colour here is an inline
+   --framer-text-color on the element, so each one needs overriding. */
+.framer-1udy7n8{background:#f4f6f8;position:relative;
+  /* the scrape set overflow:hidden here, which clipped the fillers below */
   overflow:visible!important}
-.framer-9oe6gt,.framer-1yoihn1{width:100%!important;white-space:normal!important;
-  overflow:visible!important}
+/* Fillers rather than a spread shadow: box-shadow offsets are copies of the
+   element, so once the viewport grew past twice the 760px track the copies
+   landed short and left a dark gap down each side. These are anchored to the
+   element's edges, so they reach the viewport at any width. */
+.framer-1udy7n8::before,.framer-1udy7n8::after{
+  content:"";position:absolute;top:0;bottom:0;width:50vw;background:#f4f6f8}
+.framer-1udy7n8::before{right:100%}
+.framer-1udy7n8::after{left:100%}
+/* section heading + role titles */
+.framer-1udy7n8 .framer-1as06ww,.framer-1udy7n8 .framer-1as06ww *,
+.framer-1udy7n8 .framer-1lc2h24,.framer-1udy7n8 .framer-1lc2h24 *{
+  color:rgb(0,17,34)!important}
+/* company + dates */
+.framer-1udy7n8 .framer-1vcfem0,.framer-1udy7n8 .framer-1vcfem0 *{
+  color:rgb(110,110,115)!important}
+/* role description */
+.framer-1udy7n8 .framer-1u238lz,.framer-1udy7n8 .framer-1u238lz *{
+  color:rgb(51,51,51)!important}
+/* the item outline was #1a1a1a, invisible against the light band */
+.framer-1udy7n8 [data-framer-name="Home/Work Experience Item"]{
+  --border-color:rgba(0,0,0,.12)!important}
+/* "Work Experience" sat at 20px against "About me" at 28px; match it. */
+.framer-1udy7n8 .framer-1as06ww h3{font-size:28px!important;
+  letter-spacing:-0.56px!important;line-height:1.2em!important}
 
-/* a little more room under the last role before Testimonials */
-.framer-1udy7n8{padding-bottom:34px!important}
+/* room under the last role before the footer */
+.framer-1udy7n8{padding-bottom:80px!important}
 
 /* ---- CTAs under the bio -------------------------------------------------
    Premium hover: the label and a soft sheen move together on one spring-ish

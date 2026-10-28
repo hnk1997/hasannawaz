@@ -194,4 +194,7 @@ html{background:#050505}
 }
 
 /* ========================== "See more case studies" under the work list ==== */
-.hn-more-cta{display:flex;justify-content:center;width:100%;margin-top:8px}
+/* sits inside the card list, so the gap above it is the list's own card gap at every size; the
+   padding below tops up the list's own bottom padding so the space under it matches (52px / 24px) */
+.hn-more-cta{display:flex;justify-content:center;width:100%;margin:0;padding-bottom:8px}
+@media (max-width:809.98px){.hn-more-cta{padding-bottom:4px}}

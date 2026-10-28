@@ -192,3 +192,6 @@ html{background:#050505}
 @media (min-width:1372px){
   .framer-ay3odp{width:100vw!important}
 }
+
+/* ========================== "See more case studies" under the work list ==== */
+.hn-more-cta{display:flex;justify-content:center;width:100%;margin-top:8px}
